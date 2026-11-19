@@ -14,8 +14,8 @@ Read this first in any chat about Ledger. The full handover is imported below.
   money figures (balances, amounts paid in or out).
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v65**, but the handover below only covers up to v60.
-  What changed in v61–v65 isn't written down here yet.
+- **Live version is v66**, but the handover below only covers up to v60, plus a v66 section.
+  What changed in v61–v65 isn't written down here yet. v66 adds Sync with Muse — see `_source/SYNC.md`.
 - **The split source (`ledger_source_v56.zip`, `src/` + `build.js`) is not in
   this repo.** Until it's found, `index.html` here is the only copy of the app.
   Edit it carefully, or rebuild the source from it.

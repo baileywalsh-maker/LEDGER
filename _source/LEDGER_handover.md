@@ -137,7 +137,46 @@ Current version is **v56**. Everything above still holds; this is what changed.
 
 ---
 
-## v60 update (latest)
+## v60 update
 
 - **Pearler file read properly.** Bailey's Pearler export ("ongoing transaction statement") is a cash statement: Action / Description / Value / Currency / Date ("21st November 2025, 08:06 p.m.") / Running Balance / Is Pending. No share codes or amounts. Ledger now recognises any such statement and adds deposits as money in and withdrawals as money out (kinds `deposit`/`withdraw` inside the category; never a holding). Transfers between his own cash accounts, the A$6.50 moves and rewards are left out (rewards are already inside the withdrawals).
 - Per-share history would need Pearler's trade/order history (US cash account), if Pearler offers it.
+
+## v66 update (latest)
+
+- **Sync with Muse.** Ledger now syncs the same way Jot does (v35): one file,
+  `ledger-sync.json`, in a private repo Bailey creates himself
+  (`baileywalsh-maker/ledger-sync` — NOT created yet; see the setup steps in
+  `_source/SYNC.md`). Off by default; switch it on in Settings → Your data →
+  Sync with Muse, paste a fine-grained token (Contents read/write on that
+  repo only). The token lives only in `ledger:sync-token` on the phone, never
+  in code or backups. Full spec, file format and Muse's instructions:
+  `_source/SYNC.md`.
+- **What syncs:** transactions, budgets, categories, sort rules, accounts,
+  hand-logged assets, subscriptions/bills, investments (trades, investment
+  categories, tracked-by-value flags) and the remembered CSV column mapping.
+  **Never syncs:** the live price caches (`ledger:invpx`, `invest.prices`),
+  settings, the undo stack, the pre-migration copy, the backup marker, and
+  COACH's half of the shared backup. Ledger holds no bank credentials at all.
+- **How it merges:** three-way by id against a snapshot in `ledger:sync`,
+  same rules as Jot. Transactions and investment trades changed on both sides
+  keep the newer `upd` — `upd` is stamped in `save()` whenever sync is on,
+  and only then, so sync-off phones pay nothing and change nothing. Anything
+  else changed on both sides keeps the phone's copy. Every clash is listed
+  in Settings. The sync section sits right after `save()` on purpose: save()
+  calls it during load, so it must already exist by then — do not move it
+  further down the file.
+- **Tests:** `_source/tests/synctest.js`, 34 checks against a pretend GitHub
+  (fake `api.github.com`): off by default, Muse transaction pulled on open,
+  phone transaction pushed, delete propagates, merge rules, both-ways
+  conflict keeps newer + is reported, budgets merge, bad token fails cleanly,
+  token never in backup or in the synced file, price cache never syncs,
+  `upd` stamping. Run: `NODE_PATH=<path to playwright> node _source/tests/synctest.js`.
+  Regression run for this version: `functest.js`, `citest.js`,
+  `settingstest.js` — all passed, no errors, stored data identical to v65
+  after opening.
+- **Not yet proved live.** The phone side is built and tested against a fake
+  GitHub only. The end-to-end proof still needs Bailey: create the private
+  repo, install the Muse GitHub App on it, make the token, paste it, then
+  Muse adds a test entry and it appears in Ledger. Until then, do not claim
+  sync works on his phone.
