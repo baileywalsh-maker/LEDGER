@@ -1,0 +1,6 @@
+"TransferWise ID",Date,Amount,Currency,Description,"Payment Reference","Running Balance","Exchange From","Exchange To","Exchange Rate","Payer Name","Payee Name","Payee Account Number",Merchant,"Card Last Four Digits","Card Holder Full Name",Attachment,Note,"Total fees"
+CARD-9001,17-10-2026,-23.40,GBP,"Card transaction of 23.40 GBP issued by Tesco Stores TOWN",,500.00,,,,,,,"Tesco Stores",1234,"Test Person",,,0.00
+CARD-9002,17-10-2026,-4.20,GBP,"Card transaction of 4.20 GBP issued by Stagecoach",,523.40,,,,,,,"Stagecoach",1234,"Test Person",,,0.00
+CARD-9003,16-10-2026,-32.00,GBP,"Card transaction of 32.00 GBP issued by Town Leisure",,527.60,,,,,,,"Town Leisure",1234,"Test Person",,,0.00
+CARD-9004,15-10-2026,-31.05,GBP,"Card transaction of 31.05 GBP issued by Fuel Stop",,559.60,,,,,,,"Fuel Stop",1234,"Test Person",,,0.00
+CARD-9005,14-10-2026,-9.99,GBP,"Card transaction of 9.99 GBP issued by Kebab Corner",,590.65,,,,,,,"Kebab Corner",1234,"Test Person",,,0.00
