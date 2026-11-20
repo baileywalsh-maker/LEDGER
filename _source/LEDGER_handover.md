@@ -172,7 +172,7 @@ Current version is **v56**. Everything above still holds; this is what changed.
 
 - **Sync with Muse.** Ledger now syncs the same way Jot does (v35): one file,
   `ledger-sync.json`, in a private repo Bailey creates himself
-  (`baileywalsh-maker/ledger-sync` — NOT created yet; see the setup steps in
+  (`baileywalsh-maker/LEDGER-sync`, created Nov 2026; setup steps in
   `_source/SYNC.md`). Off by default; switch it on in Settings → Your data →
   Sync with Muse, paste a fine-grained token (Contents read/write on that
   repo only). The token lives only in `ledger:sync-token` on the phone, never
@@ -201,8 +201,6 @@ Current version is **v56**. Everything above still holds; this is what changed.
   Regression run for this version: `functest.js`, `citest.js`,
   `settingstest.js` — all passed, no errors, stored data identical to v65
   after opening.
-- **Not yet proved live.** The phone side is built and tested against a fake
-  GitHub only. The end-to-end proof still needs Bailey: create the private
-  repo, install the Muse GitHub App on it, make the token, paste it, then
-  Muse adds a test entry and it appears in Ledger. Until then, do not claim
-  sync works on his phone.
+- **Live (20 Nov 2026).** The private repo exists (`LEDGER-sync`) and Bailey's phone
+  syncs to it (phone writes seen in its history). Muse's guide is `MUSE.md` in that
+  repo. Still to prove: Muse writing a test entry that then appears in Ledger.

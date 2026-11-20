@@ -2,6 +2,16 @@
 
 Read this first in any chat about Ledger. The full handover is imported below.
 
+## Who does what (Bailey, Nov 2026)
+- **Muse** is Bailey's extension of himself: it moves data around and operates Ledger
+  like he does, through the private `LEDGER-sync` repo. **Muse can change the app too.**
+- **Claude** makes the changes to the app itself.
+- **Before ANY change, without being told:** fetch the latest `main`, read the commits since
+  the last version Claude shipped (`git log`, and the diffs of any not made by Claude), and
+  work only on top of them. Never edit an old copy or undo Muse's work. If Muse's change
+  clashes with the plan, say so and ask Bailey. Then mention in the reply what Muse changed.
+- Bailey does nothing on GitHub: Claude pushes, and GitHub Pages goes live by itself.
+
 ## How changes ship now (replaces "deliver the zip / Netlify" in the handover)
 - Hosted on GitHub Pages: https://baileywalsh-maker.github.io/LEDGER/
 - Claude pushes straight to this repo (`main`). Bailey does nothing on the laptop.
