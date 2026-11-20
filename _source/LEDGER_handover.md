@@ -142,6 +142,32 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - **Pearler file read properly.** Bailey's Pearler export ("ongoing transaction statement") is a cash statement: Action / Description / Value / Currency / Date ("21st November 2025, 08:06 p.m.") / Running Balance / Is Pending. No share codes or amounts. Ledger now recognises any such statement and adds deposits as money in and withdrawals as money out (kinds `deposit`/`withdraw` inside the category; never a holding). Transfers between his own cash accounts, the A$6.50 moves and rewards are left out (rewards are already inside the withdrawals).
 - Per-share history would need Pearler's trade/order history (US cash account), if Pearler offers it.
 
+## v61–v64 updates
+
+- **v61 Pearler cash statement fixed.** "Transfer to AU Cash" with a plus amount (auto-invest
+  from the bank) = money in. A small "Transfer to AU Cash" out (A$6.50) = brokerage fee, kind
+  `cfee`. Reward rows = kind `creward`. "from US Cash" = his own sale money moving across:
+  left out. Fees and rewards are shown but never added to put in / taken out. A category with
+  no holdings shows a "Result" tile (taken out − put in) instead of "Profit from sales".
+  Importing again only adds what's missing. `CASH_KINDS` = deposit, withdraw, cfee, creward:
+  never a holding.
+- **v62 bug sweep.** Restore now keeps investment categories, renamed holdings, value-tracked
+  holdings and last-import dates (it used to drop them). An older backup without categories
+  keeps the phone's. Any entry whose category is missing gets one, so no money drops out
+  of totals. "Fix an import's currency" sheet no longer crashes. "under More" wording fixed.
+  Unsorted spending is always called "Needs a category". Car/house/pension assets are guessed
+  into a "Something else" category, not Stocks.
+- **v63.** The Assets net worth card says it includes trading capital and that Home leaves it
+  out. A Refunds-category money-in that can't be paired with a purchase comes off spending
+  ("Refunds back" line on Spending), not income. Week closed and the Last week recap use
+  `periodTotals` like every month figure.
+- **v64 Investing category** (id `invested`, kind `transfer`, gold). Money moved to or from
+  investments: not spending, not income, balance unchanged. Shown on Spending as "£X moved to
+  investments". Added to existing phones automatically. Broker names (Coinbase, Pearler,
+  Binance, etc.) suggest it first when sorting. Kept out of "biggest spends".
+- **Source split and tests (v63/v64).** These were rebuilt in the Ledger chat but are not in
+  this repo, because the test fixture is Bailey's real Pearler file and this repo is public.
+
 ## v66 update (latest)
 
 - **Sync with Muse.** Ledger now syncs the same way Jot does (v35): one file,

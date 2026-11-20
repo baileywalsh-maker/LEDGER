@@ -12,10 +12,17 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - Rolling back = revert the last commit. Every version stays in the history.
 - This repo is **public**. Never commit keys, backups, bank exports or personal
   money figures (balances, amounts paid in or out).
+- **Keep Muse in step.** Muse works from the private `LEDGER-sync` repo and reads
+  its `MUSE.md` (what the file holds, how Ledger counts money, how to edit it).
+  Any change to the synced data (a new field, category, account type or
+  investment entry kind) or to how money is counted (spending, income, You keep,
+  net position) must update `LEDGER-sync/MUSE.md` in the same go, plus
+  `_source/SYNC.md` and `_source/tests/synctest.js` if the file format changed.
+  Every release, set MUSE.md's "Matches Ledger" line to the new version.
+  Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v66**, but the handover below only covers up to v60, plus a v66 section.
-  What changed in v61–v65 isn't written down here yet. v66 adds Sync with Muse — see `_source/SYNC.md`.
+- **Live version is v66.** v61–v64 are now written up in the handover; v65 was the move to GitHub Pages. v66 adds Sync with Muse — see `_source/SYNC.md`.
 - **The split source (`ledger_source_v56.zip`, `src/` + `build.js`) is not in
   this repo.** Until it's found, `index.html` here is the only copy of the app.
   Edit it carefully, or rebuild the source from it.

@@ -104,6 +104,9 @@ balances, to a private repo only Bailey and Muse can see.
 
 ## How Muse adds / edits / deletes (Muse's instructions)
 
+> Muse's live copy of these instructions is `MUSE.md` in the private `LEDGER-sync` repo,
+> together with how Ledger counts money. That is the one Muse reads. Change both together.
+
 1. Read the current file from the private repo:
    `get_file_contents` on `baileywalsh-maker/ledger-sync`, path `ledger-sync.json`.
    If it is a 404, there is nothing synced yet — tell Bailey to open Ledger
