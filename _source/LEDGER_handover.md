@@ -16,9 +16,9 @@ I use it on **Sundays** for the weekly check-in.
    New fields are additive only.
 2. Plain, simple language. Short answers. Number every list of options in one
    running sequence so I can reply "do 1, 3". Add dot-point summaries.
-3. Deliver the deploy zip and the raw index.html with every build.
+3. (Replaced: Claude pushes straight to GitHub. See CLAUDE.md.)
 4. Show a demo (screenshots) with every big change.
-5. Test before shipping. Netlify deploys cost credits. Run the test suite.
+5. Test before shipping. Run the test suite.
 6. Never paste API keys in chat.
 
 ## What's built (decisions already made)
@@ -204,3 +204,12 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - **Live (20 Nov 2026).** The private repo exists (`LEDGER-sync`) and Bailey's phone
   syncs to it (phone writes seen in its history). Muse's guide is `MUSE.md` in that
   repo. Still to prove: Muse writing a test entry that then appears in Ledger.
+
+## v67
+
+- **Privacy clean-up for the public repo.** Removed his employer's name from the app's
+  built-in sorting hints. His own saved sort rule still files those payments as income,
+  so nothing changes on his phone. Test data now uses made-up names and places.
+- **New `privacytest.js`** (8 checks): no tokens, backups, data files, real names, or real
+  people in test CSVs. Must pass before every push.
+- CLAUDE.md now holds Bailey's nine setup rules (same as Jot).

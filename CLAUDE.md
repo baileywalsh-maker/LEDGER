@@ -2,37 +2,53 @@
 
 Read this first in any chat about Ledger. The full handover is imported below.
 
-## Who does what (Bailey, Nov 2026)
-- **Muse** is Bailey's extension of himself: it moves data around and operates Ledger
-  like he does, through the private `LEDGER-sync` repo. **Muse can change the app too.**
-- **Claude** makes the changes to the app itself.
-- **Before ANY change, without being told:** fetch the latest `main`, read the commits since
-  the last version Claude shipped (`git log`, and the diffs of any not made by Claude), and
-  work only on top of them. Never edit an old copy or undo Muse's work. If Muse's change
-  clashes with the plan, say so and ask Bailey. Then mention in the reply what Muse changed.
-- Bailey does nothing on GitHub: Claude pushes, and GitHub Pages goes live by itself.
+## The setup (Bailey's rules, same as Jot; Nov 2026)
+1. **This repo IS the app.** GitHub Pages serves `main` at
+   https://baileywalsh-maker.github.io/LEDGER/. No zips, no uploads, no Netlify.
+2. **Claude pushes straight to `main`.** Bailey never touches the laptop; he opens the app
+   on his phone and it updates.
+3. **Before any change: pull the latest and read the recent commits** (`git log`, plus the
+   diffs of any not made by Claude). **Muse** (Bailey's other assistant) runs Ledger day to
+   day through the private `LEDGER-sync` repo and **can also change this code**. Never assume
+   the code is where you left it. Build on what's live, keep Muse's changes, and mention them
+   to Bailey in one line. If one clashes with the plan, ask him first.
+4. **Pull again right before pushing**, so nothing Muse did in the meantime is lost.
+5. **Every update:** run all the tests (below), add tests for anything new, bump `sw.js`
+   (`ledger-vNN`), and never wipe or break data saved on his phone (new fields additive only).
+   Commit message = the version, e.g. `v67`; add a short section to
+   `_source/LEDGER_handover.md` in the same commit.
+6. **Keep this file current** whenever the rules or how the app works change.
+7. **Mockups and demos:** one page only, "Ledger designs" (see below). Update it each time,
+   showing the real app (screenshots of the real build), not a drawing.
+8. **What Bailey gets back:** a short summary of the changes, plus a picture if something
+   visual changed. No zips. No handover docs unless he asks, or the chat is getting too full.
+9. **This repo is PUBLIC.** Never commit personal data, keys, backups, bank exports, real
+   names, employers, places or money figures. Test data must be made up ("Test Person").
+   `node _source/tests/privacytest.js` must say "Safe to push" before every push.
 
-## How changes ship now (replaces "deliver the zip / Netlify" in the handover)
-- Hosted on GitHub Pages: https://baileywalsh-maker.github.io/LEDGER/
-- Claude pushes straight to this repo (`main`). Bailey does nothing on the laptop.
-- Before every push: run the tests in `_source/tests/` (see its README), and
-  bump the version in `sw.js` (`ledger-vNN`).
-- Commit message = the version, e.g. `v66`. Update `_source/LEDGER_handover.md`
-  in the same commit.
-- Rolling back = revert the last commit. Every version stays in the history.
-- This repo is **public**. Never commit keys, backups, bank exports or personal
-  money figures (balances, amounts paid in or out).
-- **Keep Muse in step.** Muse works from the private `LEDGER-sync` repo and reads
-  its `MUSE.md` (what the file holds, how Ledger counts money, how to edit it).
-  Any change to the synced data (a new field, category, account type or
-  investment entry kind) or to how money is counted (spending, income, You keep,
-  net position) must update `LEDGER-sync/MUSE.md` in the same go, plus
-  `_source/SYNC.md` and `_source/tests/synctest.js` if the file format changed.
-  Every release, set MUSE.md's "Matches Ledger" line to the new version.
-  Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
+## Running the tests
+- Layout the browser tests expect (outside the repo): `app/` = this build, `app-previous/` =
+  the live build before your change, `shots/`, and a copy of `_source/tests/` as `tests/`.
+  Run each from `tests/`: `NODE_PATH=$(npm root -g) CHROME=/usr/bin/google-chrome node functest.js`
+  (and soundtest, citest, montest, memotest, settingstest, frtest, movetest). functest checks
+  saved data is identical before/after the update.
+- `synctest.js` runs from inside the repo (it loads the repo's `index.html`).
+- `privacytest.js` runs from anywhere.
+- v67 baseline: 164 browser checks + 8 privacy checks, all passing.
+
+## Keep Muse in step
+- Muse reads `MUSE.md` in the private `LEDGER-sync` repo (what the file holds, how Ledger
+  counts money, how to edit it, and how Muse should mark its own app changes).
+- Any change to the synced data (a new field, category, account type or investment entry kind)
+  or to how money is counted (spending, income, You keep, net position) must update
+  `LEDGER-sync/MUSE.md` in the same go, plus `_source/SYNC.md` and `synctest.js` if the file
+  format changed. Every release, set MUSE.md's "Matches Ledger" line to the new version.
+- Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v66.** v61–v64 are now written up in the handover; v65 was the move to GitHub Pages. v66 adds Sync with Muse — see `_source/SYNC.md`.
+- **Live version is v67.** The handover covers everything up to v67 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
+- The handover's old "non-negotiable rules" mention zips and Netlify. The setup above replaces them.
+- Commits before v67 (Nov 2026) still have his name and an employer in old test files. Only a history rewrite (force push) would remove them, and that needs Bailey's OK.
 - **The split source (`ledger_source_v56.zip`, `src/` + `build.js`) is not in
   this repo.** Until it's found, `index.html` here is the only copy of the app.
   Edit it carefully, or rebuild the source from it.
