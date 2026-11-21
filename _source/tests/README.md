@@ -19,6 +19,7 @@ Every line should start PASS; "errors: []" means no console/page errors.
 - memotest.js     notes required for Other / Transfers
 - settingstest.js Settings groups, freedom targets, automatic rates, loading screen
 - frtest.js       the swipeable Freedom card
+- compacttest.js  v68 compact look: each trimmed part hidden at first, opens/closes on a tap, remembered; nothing lost
 - privacytest.js  this repo is public: no tokens, backups, data files, real names (run before every push)
 - synctest.js     Sync with Muse: fake GitHub, off by default, Muse entry pulled, phone entry pushed, delete propagates, merge rules, bad token, token never in backup or synced file, price cache never syncs
 

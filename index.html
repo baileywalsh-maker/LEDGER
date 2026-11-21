@@ -1085,6 +1085,65 @@
   .mv-item{border-radius:18px; background:#121419; border:1px solid #1f232a; padding:12px 14px; margin-bottom:8px;}
   .mv-what{font-size:12.5px; color:#9aa1ab; margin-top:6px; line-height:1.4;}
 </style>
+<style id="compact">
+/* v68 compact look (Bailey picked "B", 21 Nov 2026). Nothing is removed:
+   every trimmed part opens when its card or title is tapped. Open/closed is
+   remembered in ledger:homefold (a look setting: travels with backups like sound):
+   xHero, xFree, xDue, xCmp, xNw. Body classes x-hero etc. survive re-renders. */
+.hero{padding:14px 14px 12px; border-radius:20px; cursor:pointer;}
+.hero-amt{font-size:36px; margin-top:2px;}
+.hero-sub{font-size:12px; margin-top:4px;}
+.hero-split{gap:8px; margin-top:10px;}
+.tile{padding:8px 12px; border-radius:13px;}
+.hero-foot.running{padding-top:10px !important; margin-top:12px !important;}
+body:not(.x-hero) #net-delta, body:not(.x-hero) #m-running{display:none !important;}
+.xt::after{content:""; display:inline-block; width:6px; height:6px; margin:0 0 2px 7px; border-right:1.8px solid var(--text3); border-bottom:1.8px solid var(--text3); transform:rotate(45deg); transition:transform .2s;}
+body.x-hero .hero-lab.xt::after, body.x-free .fr-head .xt::after, body.x-cmp .cmp-head .xt::after, body.x-nw #nw-x.xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+#week-chip{padding:10px 14px !important; border-radius:18px; margin-top:10px !important;}
+#week-chip .wc-ring, #week-chip .wc-ring svg{width:40px; height:40px;}
+.sort-alert{margin-top:10px; padding:10px 14px !important; border-radius:16px !important;}
+.sa-short{display:none;}
+/* check-in and sorting side by side when both are showing */
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip.on,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #home-warn{display:inline-flex !important; vertical-align:top; width:calc(50% - 4px); box-sizing:border-box; margin-top:10px !important;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #home-warn{margin-left:4px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip.on{padding:8px 10px !important; gap:8px; align-items:center; min-height:54px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-sub,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip-go{display:none !important;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-title{white-space:nowrap; font-size:12.5px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-ring,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-ring svg{width:34px; height:34px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sort-alert{margin:0 !important; min-height:54px; padding:8px 10px !important; gap:8px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-t > b:not(.sa-short),
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-t small{display:none;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-short{display:block; font-size:13px;}
+.freedom{padding:12px 14px; margin-top:10px; border-radius:20px;}
+.fr-head{cursor:pointer;}
+.fr-g{padding:8px 6px !important;}
+.fr-g svg{height:64px !important; width:auto !important;}
+body:not(.x-free) .fr-line, body:not(.x-free) .fr-key{display:none !important;}
+.rule{padding-top:16px !important; padding-bottom:6px !important;}
+.card{border-radius:16px;}
+.lrow{padding-top:8px !important; padding-bottom:8px !important;}
+.dayhdr{padding:8px 0 0; font-size:10.5px;}
+.countdown{width:34px !important; height:34px !important;}
+body:not(.x-due) #sub-findings, body:not(.x-due) #committed-block .total-card{display:none !important;}
+#due-x{display:none; width:100%; margin-top:8px; min-height:40px; border:1px solid var(--line); border-radius:14px; background:var(--surface); color:var(--text2); font:inherit; font-size:13px; font-weight:700;}
+#due-x.on{display:block;} #due-x.alert{color:var(--brass); border-color:rgba(217,180,74,0.4);}
+.headline{padding:12px 0 2px;}
+.cmp{padding:12px 14px; margin-top:10px; border-radius:20px; cursor:pointer;}
+body:not(.x-cmp) .cmp-row, body:not(.x-cmp) .cmp-foot, body:not(.x-cmp) .cmp-moves{display:none !important;}
+body:not(.x-cmp) .cmp-line{margin-bottom:0;}
+.catrow{padding:6px 6px;}
+.uncat-btn{margin-top:10px !important;}
+#nw-card{padding-top:12px !important; padding-bottom:10px !important; cursor:pointer;}
+#nw-x{font-size:12px; color:var(--text3); font-weight:600;}
+body:not(.x-nw) #nw-verdict{display:none !important;}
+.inv-cards{display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px;}
+.inv-cards .inv-addcat{grid-column:1 / -1;}
+.inv-card{padding:12px 14px 10px; border-radius:18px;}
+.inv-cs{font-size:11.5px !important;}
+</style>
 </head>
 <body>
 <!-- v55: opening screen. Painted before anything else loads, then fades. -->
@@ -1115,7 +1174,7 @@
 <!-- ================= HOME ================= -->
 <div id="view-home">
   <div class="hero">
-    <div class="hero-lab">Net position</div>
+    <div class="hero-lab xt">Net position</div>
     <div class="hero-amt fig" id="net-amt">£0</div>
     <div class="hero-sub" id="net-delta"></div>
     <div class="hero-split">
@@ -1153,6 +1212,7 @@
   <div class="fold-b" data-fold="due">
     <div id="sub-findings"></div>
     <div id="committed-block"></div>
+    <button id="due-x" type="button"></button>
   </div>
 
   <div class="rule fold-h" data-foldh="accts" role="button" tabindex="0">Accounts <span class="fold-r"><b id="liquid-total"></b><button class="rule-link" id="home-accts-edit">Edit</button><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
@@ -1229,6 +1289,7 @@
         <button class="nw-target-btn" id="nw-target">£250,000</button>
       </div>
     </div>
+    <div id="nw-x" class="xt">Where this is heading</div>
     <div class="nw-verdict" id="nw-verdict"></div>
   </div>
 
@@ -4107,8 +4168,8 @@ function searchTxns(q){
   return txns.filter(t=>matchTxn(t, needle, numeric))
              .sort((a,b)=> b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id)));
 }
-const TXN_PAGE = 120;
-let txnPageSize = TXN_PAGE;
+const TXN_PAGE = 120, TXN_FIRST = 8;   // v68: 8 first, then the rest on a tap
+let txnPageSize = TXN_FIRST;
 
 function switchView(v){
   const changed = currentView !== v;
@@ -4212,6 +4273,41 @@ function fadeIn(el){
 // Which sections are open is a preference for this phone, kept beside the
 // other look-and-feel choices (not part of your data, so not in backups).
 const FOLD_KEY = 'ledger:homefold';
+// v68: what the compact look keeps tucked away until tapped. Stored beside the
+// fold state (a look setting), absent = tucked away.
+const XKEYS = {xHero:'x-hero', xFree:'x-free', xDue:'x-due', xCmp:'x-cmp', xNw:'x-nw'};
+function applyX(){
+  let st = {}; try{ st = JSON.parse(localStorage.getItem(FOLD_KEY)) || {}; }catch(e){}
+  for(const k in XKEYS) document.body.classList.toggle(XKEYS[k], !!st[k]);
+}
+function toggleX(k){
+  let st = {}; try{ st = JSON.parse(localStorage.getItem(FOLD_KEY)) || {}; }catch(e){}
+  if(!st || typeof st !== 'object') st = {};
+  st[k] = st[k] ? 0 : 1;
+  try{ localStorage.setItem(FOLD_KEY, JSON.stringify(st)); }catch(e){}
+  applyX(); syncDueX();
+}
+function syncDueX(){
+  const b = document.getElementById('due-x'); if(!b) return;
+  const n = document.querySelectorAll('#sub-findings .finding').length;
+  const hasTotal = !!document.querySelector('#committed-block .total-card');
+  const open = document.body.classList.contains('x-due');
+  b.classList.toggle('on', n > 0 || hasTotal);
+  b.classList.toggle('alert', n > 0 && !open);
+  b.textContent = open ? 'Show less'
+    : (n ? n + ' thing' + (n === 1 ? '' : 's') + ' to check · ' : '') + 'Monthly total and more';
+  b.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', e=>{
+  const t = e.target;
+  if(t.closest('#due-x')){ toggleX('xDue'); return; }
+  if(t.closest('.fr-head')){ toggleX('xFree'); return; }
+  if(t.closest('button, a, input, select, .tile button')) return;
+  if(t.closest('#view-home .hero')){ toggleX('xHero'); return; }
+  if(t.closest('#s-cmp')){ toggleX('xCmp'); return; }
+  if(t.closest('#nw-card') && !t.closest('#nw-chart, #nw-months, .nw-horizon')){ toggleX('xNw'); return; }
+});
+if(document.body) applyX(); else document.addEventListener('DOMContentLoaded', applyX);
 const FOLD_DEFAULT = {due:1, accts:1, recent:1, history:0, dueAll:0};
 function foldState(){
   let st = null;
@@ -4245,7 +4341,7 @@ function wireFolds(){
   });
 }
 let histAll = false;      // older months shown, this visit only
-const HIST_SHOWN = 6, RECENT_SHOWN = 5, DUE_MIN = 3;
+const HIST_SHOWN = 6, RECENT_SHOWN = 3, DUE_MIN = 3;
 
 function render(){
   memoBegin();
@@ -4259,6 +4355,7 @@ function renderNow(){
   // price rise is seen where the subscriptions are, not on a separate screen.
   if(currentView==='home') renderSubFindings();
   if(currentView==='home') renderHome();
+  if(currentView==='home') syncDueX();
   if(currentView==='spend') renderSpend();
   if(currentView==='assets') renderAssets();
   if(currentView==='more') renderMore();
@@ -4328,7 +4425,7 @@ function renderHome(){
   const saSub = uncat ? 'They show as "Needs a category" in your spending until sorted' : 'Other and Transfers need a few words on what they were';
   warn.innerHTML = ((uncat || unmemo) ? '<button class="sort-alert" id="sort-alert">'+
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>'+
-      '<span class="sa-t"><b>'+saTitle+'</b><small>'+saSub+'</small></span>'+
+      '<span class="sa-t"><b class="sa-short">'+(uncat + unmemo)+' to sort</b><b>'+saTitle+'</b><small>'+saSub+'</small></span>'+
       '<span class="sa-go">Sort</span></button>' : '') +
     (msgs.length ? '<div class="warn" style="margin-top:14px;">'+msgs.join('<br><br>')+'</div>' : '');
   const sa = document.getElementById('sort-alert');
@@ -4498,7 +4595,7 @@ function renderFreedom(){
   if(!box) return;
   const f = freedomStats();
   if(!f.n || f.avgOut <= 0){
-    box.innerHTML = '<div class="fr-head"><b>Freedom</b></div>'+
+    box.innerHTML = '<div class="fr-head"><b class="xt">Freedom</b></div>'+
       '<div class="note" style="margin-top:6px;">Shows how much you keep and how long your money would last. It needs one full month of transactions first.</div>';
     return;
   }
@@ -4557,7 +4654,7 @@ function renderFreedom(){
   const span = f.n === 1 ? 'last month' : 'last '+f.n+' months';
   let slide = 0; try{ slide = Number(localStorage.getItem('ledger:frslide')) === 1 ? 1 : 0; }catch(e){}
   box.innerHTML =
-    '<div class="fr-head"><b>Freedom</b><span>'+span+'</span></div>'+
+    '<div class="fr-head"><b class="xt">Freedom</b><span>'+span+'</span></div>'+
     '<div class="fr-slides" id="fr-slides"><div class="fr-slide">'+viewA+'</div><div class="fr-slide">'+viewB+'</div></div>'+
     '<div class="fr-dots"><button aria-label="Bars view" data-frs="0"></button><button aria-label="Gauges view" data-frs="1"></button></div>'+
     '<div class="fr-line">'+line+'</div>';
@@ -5168,7 +5265,7 @@ function renderSpendCompare(mt){
     : same ? 'Spending is level with '+c.prevName.toLowerCase()+(c.partial ? ' at this point.' : '.')
     : '<b>'+money0(Math.abs(c.diff))+' '+(c.diff < 0 ? 'less' : 'more')+'</b> than '+c.prevName.toLowerCase()+(c.partial ? ' by the '+ordinal(c.upto)+'.' : '.');
   box.innerHTML =
-    '<div class="cmp-head"><b>'+esc(c.thisName)+' vs '+esc(c.prevName.toLowerCase())+'</b>'+
+    '<div class="cmp-head"><b class="xt">'+esc(c.thisName)+' vs '+esc(c.prevName.toLowerCase())+'</b>'+
       '<span class="cmp-pill '+tone+'">'+pill+'</span></div>'+
     '<div class="cmp-line">'+line+'</div>'+
     '<div class="cmp-row"><span>'+esc(c.thisName)+'</span><div class="cmp-bar"><i class="now" style="width:'+w(mt.out)+'"></i></div><b class="fig">'+money0(mt.out)+'</b></div>'+
@@ -5283,7 +5380,7 @@ function renderSpend(){
     }));
   document.getElementById('cat-filter').innerHTML = chips.join('');
   document.querySelectorAll('#cat-filter .chip').forEach(b=>{
-    b.onclick = ()=>{ catFilter = b.dataset.cat || null; txnPageSize = TXN_PAGE; renderSpend(); };
+    b.onclick = ()=>{ catFilter = b.dataset.cat || null; txnPageSize = TXN_FIRST; renderSpend(); };
   });
 
   const found = searchTxns(txnQuery);
@@ -11733,19 +11830,19 @@ document.getElementById('txn-search').addEventListener('input', e=>{
   const v = e.target.value;
   clearTimeout(searchTimer);
   searchTimer = setTimeout(()=>{
-    txnQuery = v; txnPageSize = TXN_PAGE; renderSpend();
+    txnQuery = v; txnPageSize = TXN_FIRST; renderSpend();
   }, 160);
 });
 document.getElementById('txn-search-x').onclick = ()=>{
   document.getElementById('txn-search').value = '';
-  txnQuery = ''; txnPageSize = TXN_PAGE; renderSpend();
+  txnQuery = ''; txnPageSize = TXN_FIRST; renderSpend();
 };
 
-document.getElementById('m-prev').onclick = ()=>{ spendMonth = shiftMonth(spendMonth,-1); catFilter=null; txnPageSize=TXN_PAGE; renderSpend(); };
+document.getElementById('m-prev').onclick = ()=>{ spendMonth = shiftMonth(spendMonth,-1); catFilter=null; txnPageSize=TXN_FIRST; renderSpend(); };
 document.getElementById('m-next').onclick = ()=>{
   const now = monthKey(new Date());
   if(spendMonth >= now) return;
-  spendMonth = shiftMonth(spendMonth,1); catFilter=null; txnPageSize=TXN_PAGE; renderSpend();
+  spendMonth = shiftMonth(spendMonth,1); catFilter=null; txnPageSize=TXN_FIRST; renderSpend();
 };
 
 // ---- day watcher ----

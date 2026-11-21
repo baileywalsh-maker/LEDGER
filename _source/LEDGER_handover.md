@@ -213,3 +213,21 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - **New `privacytest.js`** (8 checks): no tokens, backups, data files, real names, or real
   people in test CSVs. Must pass before every push.
 - CLAUDE.md now holds Bailey's nine setup rules (same as Jot).
+
+## v68 compact look (Bailey picked "B", 21 Nov 2026)
+
+- Home about 30% shorter, Spending about 45% shorter. **Nothing removed**: each trimmed part
+  opens when its card or title is tapped (small arrow on the title), closes again, and is
+  remembered (`ledger:homefold` keys xHero, xFree, xDue, xCmp, xNw; body classes x-hero etc.;
+  travels with backups as a look setting, like sound).
+- Net position: figure + In/Out tiles; tap for the breakdown line and the in-vs-out bar.
+- Sunday check-in and sorting sit side by side ("27 to sort") when both are showing, and
+  full width when only one is (CSS `:has`, iOS 15.4+).
+- Freedom: both views kept (swipe), smaller gauges; tap the title for the verdict line and key.
+- Due soon: bills only; a button under them ("1 thing to check · Monthly total and more",
+  gold when there's a notice) opens notices and the monthly total.
+- Recent: 3 rows (`RECENT_SHOWN`). Spending: the month comparison shows its one-line summary;
+  tap it for the bars and Biggest changes. Transactions show 8 first (`TXN_FIRST`), then
+  "Show N more". Assets: investment cards two per row; "Where this is heading" opens the outlook.
+- All styles are in one `<style id="compact">` block before `</head>`.
+- Tests: new `compacttest.js` (19 checks). Full run: 183 browser checks + 34 sync + 8 privacy.
