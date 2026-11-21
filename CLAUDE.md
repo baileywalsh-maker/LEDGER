@@ -57,7 +57,10 @@ Read this first in any chat about Ledger. The full handover is imported below.
 ## Mockups and demos: one page per app
 - All design ideas, mockups and demos for Ledger go on ONE artifact titled "Ledger designs".
   Update that same page every time (republish to its link). Never make a new one.
-- Its link: (none yet — create it the first time a mockup is needed, then write the link here)
+- Its link: https://claude.ai/artifact/A7Y1QSjHBbTxBFJz5HKJtv (slug 49cbd1bc-8fca-45cc-85d1-c063e3183e37).
+  Published from files: `index.html` + `img/*.jpg` (real screenshots of the build, made-up test data).
+- Open on it (21 Nov 2026): space-saving mocks, Now vs A (tighter) vs B (merged/folded),
+  with numbered changes 1–8 for Bailey to pick from.
 - Old ideas get replaced on the page, not kept. Decisions go in the handover instead.
 
 @_source/LEDGER_handover.md
