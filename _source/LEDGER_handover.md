@@ -253,3 +253,23 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - Source split back in the repo (`_source/src`, `build.js`, `split.py`). History cleaned.
 - Tests: `featuretest.js` (24), `cloudtest.js` (20); privacytest rule repaired after the
   history rewrite; synctest's fake GitHub now tells the backup file apart.
+
+## Sounds: waiting on Bailey's picks (23 Nov 2026)
+
+- Sound board 1–40 is on the "Ledger designs" page. Bailey replies with one number per moment
+  (or "keep"). Then: embed the picks (mp3, mono 80k, ~4 KB each) as base64 in a new part and
+  play them through `sfx()` in place of the code-made sounds; keep the code-made ones as the
+  fallback if a sample can't play. Tests: soundtest.js.
+- Source: Kenney CC0 packs, cloned from GitHub (the workspace can reach GitHub):
+  Calinou/kenney-interface-sounds, Calinou/kenney-ui-audio,
+  Boyquotes/kenney-rpg-audio-for-godot, Boyquotes/kenney-impact-sounds-for-godot.
+  Converted with: ffmpeg -ac 1 -ar 44100 -b:a 80k -t 2.4, leading silence removed, 0.2 s fade.
+  - Net worth goes up: 1 handle_coins.ogg, 2 handle_coins_2.ogg, 3 confirmation_001.wav, 4 confirmation_002.wav, 5 pluck_002.wav
+  - Sunday check-in done: 6 book_close.ogg, 7 book_place_1.ogg, 8 book_place_2.ogg, 9 book_place_3.ogg, 10 door_close_2.ogg
+  - Statement imported: 11 book_flip_1.ogg, 12 book_flip_2.ogg, 13 book_flip_3.ogg, 14 scroll_002.wav, 15 scratch_001.wav
+  - Spending logged: 16 tick_001.wav, 17 tick_002.wav, 18 select_001.wav, 19 select_004.wav, 20 scratch_002.wav
+  - Backed up: 21 belt_handle_1.ogg, 22 switch_003.wav, 23 toggle_002.wav, 24 door_close_4.ogg, 25 impact_metal_light_000.ogg
+  - Over budget: 26 error_004.wav, 27 error_006.wav, 28 back_002.wav, 29 minimize_003.wav, 30 drop_002.wav
+  - Every tap: 31 click_001.wav, 32 click_003.wav, 33 click2.wav, 34 impact_plank_medium_000.ogg, 35 impact_generic_light_002.ogg
+  - Each £10k milestone: 36 impact_bell_heavy_000.ogg, 37 impact_bell_heavy_002.ogg, 38 confirmation_004.wav, 39 maximize_008.wav, 40 glass_002.wav
+- Also in that build: make the picked day on the calendar stand out more (`.cal-d.sel`).

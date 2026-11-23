@@ -68,7 +68,8 @@ Read this first in any chat about Ledger. The full handover is imported below.
   Update that same page every time (republish to its link). Never make a new one.
 - Its link: https://claude.ai/artifact/A7Y1QSjHBbTxBFJz5HKJtv (slug 49cbd1bc-8fca-45cc-85d1-c063e3183e37).
   Published from files: `index.html` + `img/*.jpg` (real screenshots of the build, made-up test data).
-- On it now: v67 vs v68 (the compact look Bailey chose, built 21 Nov 2026).
+- On it now: v69's new screens (payday, pots, calendar) and the sound board (1–40) waiting on
+  Bailey's picks. Number-to-file list is in the handover.
 - Old ideas get replaced on the page, not kept. Decisions go in the handover instead.
 
 @_source/LEDGER_handover.md
