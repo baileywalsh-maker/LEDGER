@@ -75,6 +75,17 @@ const ok = (c, m) => { c ? pass++ : fail++; console.log((c ? 'PASS ' : 'FAIL ') 
   await q(() => { openPot(pots[0].id); document.getElementById('pot-del').click(); });
   ok(await q(() => pots.length === 1), 'Delete removes a pot');
   ok(await q(() => { doRollback(); return pots.length === 2; }), 'Undo brings it back');
+  // ---- v70 real sounds ----
+  await q(() => { localStorage.removeItem('ledger:fx'); localStorage.removeItem('ledger:sound'); document.body.click(); });
+  await pg.waitForTimeout(1500);
+  const snd = await q(() => ({ names: Object.keys(SFX_SAMPLES).sort().join(','), decoded: Object.keys(sfxBuf).length }));
+  ok(snd.names === 'arcade,book,lownote,milestone,pencil,safe,typewriter,wood', 'All 8 moments have a recording (' + snd.names + ')');
+  ok(snd.decoded === 8, 'All 8 recordings decode (' + snd.decoded + ')');
+  ok(await q(() => { let used = 0; const real = sfxPlaySample; sfxPlaySample = (n, t) => { used++; return real(n, t); };
+      for (const n in SFX_SAMPLES) SFX[n](audioCtx.currentTime + 0.01); sfxPlaySample = real; return used === 8; }), 'Each moment plays its recording');
+  ok(await q(() => { const keep = sfxBuf.arcade; delete sfxBuf.arcade; let threw = false; try { SFX.arcade(audioCtx.currentTime + 0.01); } catch (e) { threw = true; } sfxBuf.arcade = keep; return !threw; }), 'A recording that isn\'t ready falls back to the old sound');
+  ok(await q(() => { localStorage.setItem('ledger:fx', 'off'); let used = 0; const real = sfxPlaySample; sfxPlaySample = () => { used++; return true; };
+      sfx('book'); return new Promise(r => setTimeout(() => { sfxPlaySample = real; localStorage.removeItem('ledger:fx'); r(used === 0); }, 150)); }), 'Moment sounds switch in Settings still turns them off');
   ok(errs.length === 0, 'No errors (' + errs.join(' | ') + ')');
   console.log('errors: ' + JSON.stringify(errs));
   await b.close();

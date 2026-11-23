@@ -33,7 +33,8 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - **First, every time:** `node _source/build.js --check`. If it says index.html does NOT match
   src/, someone (Muse) edited `index.html` directly: run `python3 _source/split.py index.html
   _source/src`, rename `_source/src/order.txt` to `parts.txt`, and keep those changes.
-- New parts in v69: `js/32b-cloud-backup.js`, `js/37b-payday-calendar-pots.js`.
+- Parts added since the split: `js/12b-real-sounds.js` (v70), `js/32b-cloud-backup.js`,
+  `js/37b-payday-calendar-pots.js` (v69).
 
 ## Running the tests
 - Layout the browser tests expect (outside the repo): `app/` = this build, `app-previous/` =
@@ -45,7 +46,7 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - `privacytest.js` runs from anywhere.
 - Also `compacttest.js` (v68) and `featuretest.js` (v69) in the same layout. `cloudtest.js` runs
   from inside the repo like synctest.
-- v69 baseline: 173 browser checks + 34 sync + 20 cloud backup + 8 privacy, all passing.
+- v70 baseline: 178 browser checks + 34 sync + 20 cloud backup + 8 privacy, all passing.
 
 ## Keep Muse in step
 - Muse reads `MUSE.md` in the private `LEDGER-sync` repo (what the file holds, how Ledger
@@ -57,7 +58,7 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v69** (cloud backup, payday, calendar, pots). The handover covers everything up to v69 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
+- **Live version is v70** (real sounds). The handover covers everything up to v70 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
 - The handover's old "non-negotiable rules" mention zips and Netlify. The setup above replaces them.
 - History was rewritten on 23 Nov 2026 (Bailey's OK) to remove his name, employer and town from
   old commits. Commit ids before that date changed.
@@ -68,8 +69,7 @@ Read this first in any chat about Ledger. The full handover is imported below.
   Update that same page every time (republish to its link). Never make a new one.
 - Its link: https://claude.ai/artifact/A7Y1QSjHBbTxBFJz5HKJtv (slug 49cbd1bc-8fca-45cc-85d1-c063e3183e37).
   Published from files: `index.html` + `img/*.jpg` (real screenshots of the build, made-up test data).
-- On it now: v69's new screens (payday, pots, calendar) and the sound board (1–40) waiting on
-  Bailey's picks. Number-to-file list is in the handover.
+- On it now: v69's new screens (payday, pots, calendar) and the 8 sounds Bailey picked (v70).
 - Old ideas get replaced on the page, not kept. Decisions go in the handover instead.
 
 @_source/LEDGER_handover.md

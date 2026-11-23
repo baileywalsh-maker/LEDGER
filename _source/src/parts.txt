@@ -6,6 +6,7 @@ html/05-body.html
 js/10-start.js
 js/11-money-helpers.js
 js/12-tap-sound-a-soft-bubble-pop-fast.js
+js/12b-real-sounds.js
 js/13-periods-one-function-does-months.js
 js/14-month-completion.js
 js/15-goals-and-achievements.js
