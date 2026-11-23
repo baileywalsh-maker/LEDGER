@@ -1143,6 +1143,47 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 .inv-cards .inv-addcat{grid-column:1 / -1;}
 .inv-card{padding:12px 14px 10px; border-radius:18px;}
 .inv-cs{font-size:11.5px !important;}
+/* v69: payday countdown */
+.payday{display:block; width:100%; text-align:left; margin-top:10px; padding:10px 14px; border-radius:18px; border:1px solid var(--line); background:var(--surface); color:var(--text); font:inherit; cursor:pointer;}
+.payday[hidden]{display:none;}
+.pd-main{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.pd-lab{font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.06em;}
+.pd-main b{font-family:var(--display); font-size:20px; font-weight:600; margin-left:auto;}
+.pd-per{font-size:12.5px; color:var(--text2);}
+.pd-when{font-size:12px; color:var(--text3); margin-top:1px;}
+.payday.short .pd-main b{color:var(--out);}
+.pd-more{display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--line);}
+body.x-pay .pd-more{display:block;}
+body.x-pay .payday .xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+.pd-row{display:flex; justify-content:space-between; gap:10px; font-size:13px; color:var(--text2); padding:3px 0;}
+.pd-row b{color:var(--text); font-weight:600; white-space:nowrap;} .pd-row b.out{color:var(--out);}
+.pd-tot{border-top:1px solid var(--line); margin-top:4px; padding-top:6px; color:var(--text); font-weight:700;}
+/* v69: spending calendar */
+.cal{margin-top:10px; padding:12px 14px; border-radius:20px; background:var(--surface); border:1px solid var(--line);}
+.cal[hidden]{display:none;}
+.cal-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; cursor:pointer;}
+.cal-head b{font-size:15px; font-weight:800;} .cal-head span{font-size:12px; color:var(--text3);}
+body.x-calshut .cal-body{display:none;}
+body:not(.x-calshut) .cal-head .xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+.cal-wk, .cal-grid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px;}
+.cal-wk{margin-top:10px; font-size:10.5px; color:var(--text3); text-align:center; font-weight:700;}
+.cal-grid{margin-top:5px;}
+.cal-d{aspect-ratio:1; border:0; border-radius:9px; font:600 12px var(--sans, inherit); color:var(--text2); background:var(--surface2); cursor:pointer; padding:0;}
+.cal-d.l1{background:rgba(217,180,74,.18); color:var(--text);} .cal-d.l2{background:rgba(217,180,74,.36); color:var(--text);}
+.cal-d.l3{background:rgba(217,180,74,.6); color:#15171b;} .cal-d.l4{background:#d9b44a; color:#15171b;}
+.cal-d.fut{background:none; color:var(--text3); opacity:.45; cursor:default;}
+.cal-d.today{box-shadow:inset 0 0 0 1.5px var(--text2);}
+.cal-d.sel{box-shadow:0 0 0 2px var(--bg), 0 0 0 4px var(--brass);}
+.cal-key{display:flex; justify-content:flex-end; align-items:center; gap:4px; margin-top:8px; font-size:10.5px; color:var(--text3);}
+.cal-key i{width:12px; height:12px; border-radius:3px; display:block;}
+.cal-key i.l1{background:rgba(217,180,74,.18);} .cal-key i.l2{background:rgba(217,180,74,.36);} .cal-key i.l3{background:rgba(217,180,74,.6);} .cal-key i.l4{background:#d9b44a;}
+/* v69: savings pots */
+#pots-sec[hidden]{display:none;}
+.pot{padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer;} .pot:last-child{border-bottom:0;}
+.pot-top{display:flex; justify-content:space-between; gap:10px; align-items:baseline;}
+.pot-name{font-weight:700; font-size:14px;} .pot-top .fig{font-weight:600; font-size:14px; white-space:nowrap;} .pot-top small{color:var(--text3); font-weight:500;}
+.pot-bar{height:6px; border-radius:4px; background:var(--surface2); margin:7px 0 5px; overflow:hidden;} .pot-bar i{display:block; height:100%; background:var(--brass); border-radius:4px;}
+.pot-line{font-size:12px; color:var(--text3);} .pot-line.good{color:var(--in);} .pot-line.mid{color:var(--brass);}
 </style>
 </head>
 <body>
@@ -1187,6 +1228,8 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
       <div class="hf-days" id="m-days"></div>
     </div>
   </div>
+  <!-- v69: how much is left until payday -->
+  <button class="payday" id="payday" type="button" hidden></button>
 
   <!-- v56: Home in order of what needs you. The check-in and anything that
        needs sorting come first and vanish when done; the rest folds. Tap a
@@ -1207,6 +1250,12 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 
   <!-- v54: the two numbers that decide freedom -->
   <div class="freedom" id="freedom"></div>
+
+  <!-- v69: savings pots (only shows once there is one) -->
+  <div id="pots-sec" hidden>
+    <div class="rule fold-h" data-foldh="pots" role="button" tabindex="0">Saving for <span class="fold-r"><b id="pots-total"></b><button class="rule-link" id="pots-add">Add</button><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    <div class="fold-b" data-fold="pots"><div id="pots-list"></div></div>
+  </div>
 
   <div class="rule fold-h" data-foldh="due" role="button" tabindex="0">Due soon <span class="fold-r"><b id="committed-total"></b><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
   <div class="fold-b" data-fold="due">
@@ -1248,6 +1297,8 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 
   <!-- v56: this month against last, like for like -->
   <div class="cmp" id="s-cmp" style="display:none;"></div>
+  <!-- v69: day by day -->
+  <div class="cal" id="s-cal" hidden></div>
 
   <button class="uncat-btn" id="s-uncat" style="display:none;">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
@@ -1360,6 +1411,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
     <div class="lrow tap" id="open-budgets"><div><div class="d1">Monthly budgets</div><div class="d2" id="budget-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
     <div class="lrow tap" id="open-accounts"><div><div class="d1">Accounts</div><div class="d2" id="acct-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
     <div class="lrow tap" id="open-rules"><div><div class="d1">Categories and rules</div><div class="d2" id="rule-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-pots"><div><div class="d1">Saving for</div><div class="d2" id="pots-sub">Nothing yet</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
     <div class="lrow tap" id="open-targets"><div><div class="d1">Freedom targets</div><div class="d2" id="targets-sub">Keep 30% · 6 months runway</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
   </div>
   <button class="btn ghost" data-close-sheet="set-setup-backdrop">Done</button>
@@ -1396,6 +1448,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
   <div style="height:12px"></div>
   <div class="card set-rows" data-closes="set-data-backdrop">
     <div class="lrow tap" id="do-restore"><div><div class="d1">Restore</div><div class="d2">Load a backup file</div></div><div class="amtcol"><i class="ti ti-upload" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="do-cloud-putback"><div><div class="d1">Cloud backup</div><div class="d2" id="cloud-sub">Every day</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
     <p class="note" id="backup-note" style="margin:8px 2px 2px;"></p>
     <div class="lrow tap" id="open-export"><div><div class="d1">Export</div><div class="d2">A CSV of everything, or totals by week or month</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
   </div>
@@ -1403,9 +1456,9 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
     <div class="lrow"><div><div class="d1">Sync with Muse</div><div class="d2" id="sync-state">Off</div></div>
       <div class="amtcol"><button id="t-sync" class="chip" role="switch" aria-checked="false" aria-label="Sync with Muse">Off</button></div></div>
     <div id="sync-setup" style="display:none; padding:0 16px 16px;">
-      <p class="note" style="margin:8px 0;">Let Muse add or correct transactions and budgets for you. Off until you switch it on. Your money syncs to a private place only you and Muse can see — never to this public app. Price caches, settings and COACH data never sync.</p>
+      <p class="note" style="margin:8px 0;">Lets Muse add and fix transactions and budgets. Syncs to your private repo only. Settings and COACH data never sync.</p>
       <input class="field" type="password" id="sync-token" placeholder="Paste your GitHub token here" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%; margin:4px 0 10px;">
-      <p class="note" style="margin:0 0 10px;">Make a token in GitHub that can only read and write the private ledger-sync repo. It stays on this phone — it is never sent anywhere except GitHub, and never backed up.</p>
+      <p class="note" style="margin:0 0 10px;">A GitHub token for the private ledger-sync repo only. It stays on this phone and is never backed up.</p>
       <div style="display:flex; gap:8px;">
         <button class="btn soft" id="sync-now" style="flex:1;">Sync now</button>
         <button class="btn soft" id="sync-forget" style="flex:1;">Remove token</button>
@@ -1443,6 +1496,29 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
   <button class="btn" id="restore-go" style="margin-top:14px;">Replace with this backup</button>
   <button class="btn ghost" id="restore-cancel">Cancel</button>
 </div></div>
+<!-- v69: a savings pot -->
+<div class="backdrop" id="pot-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="pot-title">Something to save for</h2>
+  <span class="lab">What for</span><input type="text" id="pot-name" placeholder="e.g. Trip fund" autocomplete="off">
+  <div class="row2">
+    <div><span class="lab">Target (£)</span><input type="number" id="pot-target" inputmode="decimal" step="1" min="0"></div>
+    <div><span class="lab">By (optional)</span><input type="date" id="pot-date"></div>
+  </div>
+  <span class="lab">Kept in its own account?</span><select id="pot-acct"></select>
+  <div id="pot-saved-wrap"><span class="lab">Saved so far (£)</span><input type="number" id="pot-saved" inputmode="decimal" step="0.01" min="0"></div>
+  <button class="btn" id="pot-save" style="margin-top:14px;">Save</button>
+  <button class="btn ghost" id="pot-del" style="color:var(--out);">Delete</button>
+  <button class="btn ghost" id="pot-cancel">Cancel</button>
+</div></div>
+<!-- v69: put back a daily cloud backup -->
+<div class="backdrop" id="cloud-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Put back from cloud</h2>
+  <p class="note" style="margin:4px 0 12px;">Saved every day to your private GitHub. Pick a day.</p>
+  <div id="cloud-body"></div>
+  <button class="btn ghost" id="cloud-close" style="margin-top:12px;">Close</button>
+</div></div>
 <div class="backdrop" id="exportpick-backdrop"><div class="sheet">
   <div class="grab"></div>
   <h2>Export</h2>
@@ -1461,7 +1537,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
     <button class="sort-x" id="sort-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <div class="sort-bar"><i id="sort-bar"></i></div>
-  <p class="note" style="margin:10px 0 12px;">Tap a category and the row goes. Ledger remembers the shop for next time. Other and Transfers need a quick note.</p>
+  <p class="note" style="margin:10px 0 12px;">Tap a category to file it. Ledger remembers the shop. Other and Transfers need a note.</p>
   <div id="sort-list"></div>
 </div></div>
 
@@ -1610,7 +1686,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 <div class="backdrop" id="fximport-backdrop"><div class="sheet">
   <div class="grab"></div>
   <h2>Fix an import's currency</h2>
-  <p class="note" style="margin:6px 0 14px;">For a statement that came in as the wrong currency. Only those payments change, and it can be undone. Ledger's main currency is <b id="fximp-target2"></b>.</p>
+  <p class="note" style="margin:6px 0 14px;">For a statement read in the wrong currency. Only those payments change, with undo. Main currency: <b id="fximp-target2"></b>.</p>
   <span class="lab">Account</span>
   <select id="fximp-acct"></select>
   <span class="lab">Those figures were really in</span>
@@ -1656,7 +1732,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 <div class="backdrop" id="currency-backdrop"><div class="sheet">
   <div class="grab"></div>
   <h2>Currency</h2>
-  <p class="note" style="margin:6px 0 14px;">Everything is currently held in <b id="cur-current"></b>. Switching converts every figure you have stored using the rate on the day you switch.</p>
+  <p class="note" style="margin:6px 0 14px;">Now in <b id="cur-current"></b>. Switching converts every figure at today's rate.</p>
   <span class="lab">Change to</span>
   <select id="cur-select"></select>
   <button class="btn ghost" id="cur-fetch">Get today's rate</button>
@@ -1958,7 +2034,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
 <div class="backdrop" id="recur-backdrop"><div class="sheet">
   <div class="grab"></div>
   <h2>Subscriptions and bills</h2>
-  <p class="note" style="margin-bottom:12px;">Regular payments. They're posted on the due date and swapped for the real one when you import, so nothing counts twice.</p>
+  <p class="note" style="margin-bottom:12px;">Posted on the due date, then swapped for the real one when you import. Nothing counts twice.</p>
   <div id="recur-summary"></div>
   <div id="recur-list"></div>
 
@@ -2090,7 +2166,7 @@ body:not(.x-nw) #nw-verdict{display:none !important;}
     <div class="rule">History</div>
     <div id="ad-history"></div>
     <div class="rule">Counted twice?</div>
-    <p class="note" style="margin:0 0 8px;">If this is money that is already in your Crypto or Stocks, mark it here. It is kept, just not added to your totals again.</p>
+    <p class="note" style="margin:0 0 8px;">Already in Crypto or Stocks? Mark it so it isn't counted twice. It's kept.</p>
     <div class="ad-cover" id="ad-cover">
 
     </div>
@@ -4275,7 +4351,7 @@ function fadeIn(el){
 const FOLD_KEY = 'ledger:homefold';
 // v68: what the compact look keeps tucked away until tapped. Stored beside the
 // fold state (a look setting), absent = tucked away.
-const XKEYS = {xHero:'x-hero', xFree:'x-free', xDue:'x-due', xCmp:'x-cmp', xNw:'x-nw'};
+const XKEYS = {xHero:'x-hero', xFree:'x-free', xDue:'x-due', xCmp:'x-cmp', xNw:'x-nw', xPay:'x-pay', xCalShut:'x-calshut'};
 function applyX(){
   let st = {}; try{ st = JSON.parse(localStorage.getItem(FOLD_KEY)) || {}; }catch(e){}
   for(const k in XKEYS) document.body.classList.toggle(XKEYS[k], !!st[k]);
@@ -4308,7 +4384,7 @@ document.addEventListener('click', e=>{
   if(t.closest('#nw-card') && !t.closest('#nw-chart, #nw-months, .nw-horizon')){ toggleX('xNw'); return; }
 });
 if(document.body) applyX(); else document.addEventListener('DOMContentLoaded', applyX);
-const FOLD_DEFAULT = {due:1, accts:1, recent:1, history:0, dueAll:0};
+const FOLD_DEFAULT = {due:1, accts:1, recent:1, history:0, dueAll:0, pots:1};
 function foldState(){
   let st = null;
   try{ st = JSON.parse(localStorage.getItem(FOLD_KEY)); }catch(e){}
@@ -4356,6 +4432,7 @@ function renderNow(){
   if(currentView==='home') renderSubFindings();
   if(currentView==='home') renderHome();
   if(currentView==='home') syncDueX();
+  if(currentView==='home'){ try{ renderPayday(); renderPots(); }catch(e){} }
   if(currentView==='spend') renderSpend();
   if(currentView==='assets') renderAssets();
   if(currentView==='more') renderMore();
@@ -5411,6 +5488,7 @@ function renderSpend(){
     sum.innerHTML = '';
     list = txnsInMonth(spendMonth).sort((a,b)=> b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
     if(catFilter) list = list.filter(t=> (t.cat||'__none')===catFilter );
+    if(dayFilter) list = list.filter(t=> t.date === dayFilter);   // v69: a day picked on the calendar
   }
   document.getElementById('txn-count').textContent = list.length ? list.length : '';
   // Rendering a whole year of statements at once builds thousands of rows and
@@ -5680,6 +5758,7 @@ function renderMore(){
     (nMonths ? ' · insights from '+nMonths+' month'+(nMonths===1?'':'s') : '');
   document.getElementById('acct-sub').textContent = accts.length ? accts.length+' set up' : 'None yet';
   document.getElementById('rule-sub').textContent = rules.length+' rule'+(rules.length===1?'':'s')+' · '+cats.length+' categories';
+  paintCloudRow();
   const carriedOn = carryDate();
   document.getElementById('backup-note').textContent = carriedOn
     ? 'One file, both apps — includes COACH data from '+
@@ -7719,9 +7798,7 @@ document.getElementById('c-compare').onclick = ()=>{
           '</div>').join('')
       : '<p class="note" style="margin-top:10px;">Nothing in your data explains this one. The usual '+
         'cause is a transaction that has not been imported yet.</p>';
-    body += '<p class="note" style="margin-top:4px;">An adjustment does not fix any of the above — it '+
-      'writes a made-up transaction to paper over the gap, and whatever caused it is still there. '+
-      'Use it only when the real cause cannot be found.</p>';
+    body += '<p class="note" style="margin-top:4px;">An adjustment only papers over the gap. Use it when the real cause can\'t be found.</p>';
   }
   el.innerHTML = rows + body;
   wireDriftCauses(id, drift);
@@ -8502,7 +8579,7 @@ function snapshot(label){
     const stack = loadUndoStack();
     stack.push({
       label, at: new Date().toISOString(),
-      accts, txns, cats, rules, assets, settings, recur, budgets, invest
+      accts, txns, cats, rules, assets, settings, recur, budgets, invest, pots
     });
     while(stack.length > UNDO_DEPTH) stack.shift();
     localStorage.setItem(K_ROLLBACK, JSON.stringify(stack));
@@ -8512,7 +8589,7 @@ function snapshot(label){
     try{
       localStorage.setItem(K_ROLLBACK, JSON.stringify([{
         label, at: new Date().toISOString(),
-        accts, txns, cats, rules, assets, settings, recur, budgets, invest
+        accts, txns, cats, rules, assets, settings, recur, budgets, invest, pots
       }]));
     }catch(e2){}
   }
@@ -8536,6 +8613,7 @@ function doRollback(){
   recur = s.recur||[]; budgets = s.budgets||{};
   // Snapshots from before v57 have no investments: those are left as they are.
   if(s.invest && Array.isArray(s.invest.trades)){ invest = s.invest; saveInvest(); }
+  if(Array.isArray(s.pots)){ pots = s.pots; savePots(); }   // v69; older steps have none
   save(K.accts,accts); save(K.txns,txns); save(K.cats,cats); save(K.rules,rules);
   save(K.assets,assets); save(K.settings,settings); save(K.recur,recur); save(K.budgets,budgets);
   stack.pop();
@@ -9677,7 +9755,7 @@ function ledgerSection(){
   // restored phone does not ask you to map your statement all over again.
   let impmap = null;
   try{ impmap = JSON.parse(localStorage.getItem(K.impmap)); }catch(e){ impmap = null; }
-  return { version:1, schema:SCHEMA, accts, txns, cats, rules, assets, settings, recur, budgets, impmap, invest, look: lookPrefs() };
+  return { version:1, schema:SCHEMA, accts, txns, cats, rules, assets, settings, recur, budgets, impmap, invest, pots, look: lookPrefs() };
 }
 // v65: the look-and-feel switches (sound, moment sounds, haptics, folded home
 // sections, Freedom card view) travel in the backup too, so restoring onto a
@@ -9722,12 +9800,10 @@ function backupMarkDone(){
   render();
 }
 function runBackup(){
-  const carried = loadCarry();
   // The Ledger fields stay at the top level — the shape every build before v38
-  // wrote and can still read. Only COACH's half is nested.
-  const payload = Object.assign({ __suite: SUITE_VERSION, exported:new Date().toISOString() },
-                                ledgerSection(), { coach: carried });
-  const text = JSON.stringify(payload, null, 2);
+  // wrote and can still read. Only COACH's half is nested. (v69: built in one
+  // place, backupPayloadText, so the cloud copy is the very same file.)
+  const text = backupPayloadText(true);
   let file = null;
   try{ file = new File([text], BACKUP_FILENAME, {type:'application/json'}); }catch(e){}
   const canShareFile = !!(file && navigator.canShare && navigator.share && (()=>{ try{ return navigator.canShare({files:[file]}); }catch(e){ return false; } })());
@@ -9770,6 +9846,8 @@ function inspectBackup(text){
     if(src.invest && Array.isArray(src.invest.trades))
       d.invest = JSON.parse(JSON.stringify(Object.assign({}, src.invest, {trades: src.invest.trades.filter(t=> t && typeof t==='object' && /^\d{4}-\d{2}-\d{2}/.test(t.date||'') && isFinite(t.qty)), prices: src.invest.prices || {}})));
   }catch(e){ return {error:'That file could not be read. It may be damaged.'}; }
+  // v69: savings pots. An older backup has none: then this phone's are kept.
+  if(Array.isArray(src.pots)) d.pots = JSON.parse(JSON.stringify(src.pots.filter(p=> p && typeof p === 'object' && p.id)));
   const did = tidyData(d);
   if(fileSchema < SCHEMA){ try{ migrateData(d, fileSchema); }catch(e){} }
   const dates = d.txns.map(t=>t.date.slice(0,10)).sort();
@@ -9829,6 +9907,7 @@ function applyRestore(info){
     d.invest.cats = cats0;
     invest = d.invest; saveInvest();
   }
+  if(Array.isArray(d.pots)){ pots = d.pots; savePots(); }
   try{ localStorage.setItem(K_SCHEMA, String(SCHEMA)); }catch(e){}
   if(info.suite.coach) setCarry(info.suite.coach, info.saved || todayYMD());
   // v65: older backups have no look settings; then this phone's are kept.
@@ -9843,8 +9922,14 @@ function applyRestore(info){
 document.getElementById('restore-file').addEventListener('change', e=>{
   const f = e.target.files[0]; if(!f) return;
   const rd = new FileReader();
-  rd.onload = ()=>{
-    const info = inspectBackup(String(rd.result));
+  rd.onload = ()=> openRestoreText(String(rd.result));
+  rd.onerror = ()=> alert('That file could not be read.');
+  rd.readAsText(f);
+  e.target.value = '';
+});
+// v69: one way in for a backup's text, from a file or from the cloud.
+function openRestoreText(text){
+    const info = inspectBackup(text);
     if(info.error){ alert(info.error); return; }
     if(info.coachOnly){
       setCarry(info.suite.coach, info.suite.exported ? info.suite.exported.slice(0,10) : todayYMD());
@@ -9856,11 +9941,7 @@ document.getElementById('restore-file').addEventListener('change', e=>{
     restorePending = info;
     renderRestorePreview(info);
     openSheet('restore-backdrop');
-  };
-  rd.onerror = ()=> alert('That file could not be read.');
-  rd.readAsText(f);
-  e.target.value = '';
-});
+}
 document.getElementById('restore-cancel').onclick = ()=>{ restorePending = null; closeSheet('restore-backdrop'); };
 document.getElementById('restore-go').onclick = ()=>{
   const info = restorePending; if(!info || info.newer) return;
@@ -9952,6 +10033,143 @@ document.getElementById('do-csv').onclick = ()=>{
   });
   download('ledger-transactions-'+todayYMD()+'.csv', rows.map(r=>r.join(',')).join('\n'), 'text/csv');
 };
+
+// ============================================================
+// v69: automatic daily cloud backup
+// ============================================================
+// Once a day, on the first open, Ledger saves the same backup file it shares to
+// Files into the private sync repo, as backups/ledger-backup.json. GitHub keeps
+// every earlier version of that file, so "Put back" can offer any day, and the
+// repo stays small (one file, versions kept as history).
+// Uses the sync token already on the phone (Contents read/write on that private
+// repo only). Off when sync is off. The token is never in the file.
+// A day counts as backed up only once GitHub confirms the save.
+const CLOUD_PATH = 'backups/ledger-backup.json';
+const CLOUD_BASE = 'https://api.github.com/repos/' + SYNC_OWNER + '/' + SYNC_REPO;
+const CLOUD_API = CLOUD_BASE + '/contents/' + CLOUD_PATH;
+const CLOUD_DAY_KEY = 'ledger:cloudday';   // the day of the last confirmed cloud save (phone only)
+let cloudBusy = false;
+
+function backupPayloadText(pretty){
+  const payload = Object.assign({ __suite: SUITE_VERSION, exported:new Date().toISOString() },
+                                ledgerSection(), { coach: loadCarry() });
+  return JSON.stringify(payload, null, pretty ? 2 : 0);
+}
+function cloudBackupOn(){ return syncEnabled() && !!syncToken(); }
+function cloudLastDay(){ try{ return localStorage.getItem(CLOUD_DAY_KEY) || null; }catch(e){ return null; } }
+function cloudHeaders(token, raw){
+  return {'Authorization':'Bearer ' + token, 'Accept': raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json'};
+}
+async function cloudBackupNow(opts){
+  opts = opts || {};
+  if(cloudBusy) return {ok:false, reason:'busy'};
+  if(!cloudBackupOn()){ if(!opts.quiet) showToast('Turn on Sync with Muse first: cloud backup uses the same private repo'); return {ok:false, reason:'off'}; }
+  const token = syncToken();
+  cloudBusy = true;
+  try{
+    let sha = null, r;
+    try{ r = await fetch(CLOUD_API, {headers:cloudHeaders(token), cache:'no-store'}); }
+    catch(e){ throw Object.assign(new Error('offline'), {code:'offline'}); }
+    if(r.status === 401 || r.status === 403) throw Object.assign(new Error('auth'), {code:'auth'});
+    if(r.ok){ const d = await r.json(); sha = d && d.sha || null; }
+    else if(r.status !== 404) throw Object.assign(new Error('http ' + r.status), {code:'http'});
+    const day = todayYMD();
+    const body = {message:'Ledger backup ' + day, content:btoa(unescape(encodeURIComponent(backupPayloadText(false))))};
+    if(sha) body.sha = sha;
+    try{
+      r = await fetch(CLOUD_API, {method:'PUT', headers:Object.assign(cloudHeaders(token), {'Content-Type':'application/json'}), body:JSON.stringify(body)});
+    }catch(e){ throw Object.assign(new Error('offline'), {code:'offline'}); }
+    if(r.status === 401 || r.status === 403) throw Object.assign(new Error('auth'), {code:'auth'});
+    if(!r.ok) throw Object.assign(new Error('http ' + r.status), {code:'http'});
+    // Confirmed by GitHub: this day is backed up.
+    try{ localStorage.setItem(CLOUD_DAY_KEY, day); localStorage.setItem('ledger:lastbackupday', day); }catch(e){}
+    settings.lastBackup = day; save(K.settings, settings);
+    if(!opts.quiet){ sfx('safe'); showToast('Backed up to your private GitHub'); }
+    render(); if(typeof renderMore === 'function') try{ renderMore(); }catch(e){}
+    return {ok:true};
+  }catch(e){
+    if(!opts.quiet) showToast(e.code === 'auth' ? 'GitHub did not accept the token. Check it in Sync with Muse'
+      : e.code === 'offline' ? 'No connection. Ledger tries again next time you open it'
+      : 'Cloud backup failed (' + e.message + ')');
+    return {ok:false, reason:e.code};
+  }finally{ cloudBusy = false; }
+}
+// First open of each day (and when Ledger comes back to the front on a new day).
+function cloudBackupDaily(){
+  if(!cloudBackupOn() || cloudLastDay() === todayYMD()) return;
+  cloudBackupNow({quiet:true});
+}
+setTimeout(cloudBackupDaily, 6000);   // after sync has pulled in anything from Muse
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setTimeout(cloudBackupDaily, 1500); });
+
+// ---- Put back: pick a day ----
+async function cloudListDays(){
+  const token = syncToken();
+  let r;
+  try{ r = await fetch(CLOUD_BASE + '/commits?path=' + encodeURIComponent(CLOUD_PATH) + '&per_page=60', {headers:cloudHeaders(token), cache:'no-store'}); }
+  catch(e){ throw Object.assign(new Error('offline'), {code:'offline'}); }
+  if(r.status === 401 || r.status === 403) throw Object.assign(new Error('auth'), {code:'auth'});
+  if(!r.ok) throw Object.assign(new Error('http ' + r.status), {code:'http'});
+  const list = await r.json();
+  // One per day: the newest save of each day.
+  const seen = {}, out = [];
+  for(const c of (Array.isArray(list) ? list : [])){
+    const when = c && c.commit && (c.commit.author && c.commit.author.date || c.commit.committer && c.commit.committer.date);
+    if(!when) continue;
+    const d = new Date(when), day = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if(seen[day]) continue;
+    seen[day] = 1; out.push({day, sha:c.sha});
+  }
+  return out;
+}
+async function cloudFetchAt(sha){
+  const token = syncToken();
+  let r;
+  try{ r = await fetch(CLOUD_API + '?ref=' + encodeURIComponent(sha), {headers:cloudHeaders(token, true), cache:'no-store'}); }
+  catch(e){ throw Object.assign(new Error('offline'), {code:'offline'}); }
+  if(!r.ok) throw Object.assign(new Error('http ' + r.status), {code:r.status === 401 || r.status === 403 ? 'auth' : 'http'});
+  return await r.text();
+}
+async function openCloudPutBack(){
+  const body = document.getElementById('cloud-body');
+  if(!cloudBackupOn()){
+    body.innerHTML = '<div class="note">Cloud backup uses the same private repo as Sync with Muse. Turn sync on (Settings → Your data) and it starts the next day you open Ledger.</div>';
+    openSheet('cloud-backdrop'); return;
+  }
+  body.innerHTML = '<div class="note">Looking up your backups…</div>';
+  openSheet('cloud-backdrop');
+  try{
+    const days = await cloudListDays();
+    if(!days.length){ body.innerHTML = '<div class="note">No cloud backups yet. The first is saved the next time you open Ledger.</div>'; return; }
+    const nice = s => parseYMD(s).toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+    body.innerHTML = '<div class="card">' + days.map((x, i) =>
+      '<div class="lrow tap" data-cloudsha="' + esc(x.sha) + '"><div><div class="d1">' + nice(x.day) + '</div>' +
+      (i === 0 ? '<div class="d2">Newest</div>' : '') + '</div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>').join('') + '</div>' +
+      '<p class="note" style="margin:8px 2px 0;">You see what\'s in it next to what\'s on your phone before anything changes.</p>';
+    body.querySelectorAll('[data-cloudsha]').forEach(row => row.onclick = async ()=>{
+      row.querySelector('.d1').textContent += ' · opening…';
+      try{
+        const text = await cloudFetchAt(row.dataset.cloudsha);
+        closeSheet('cloud-backdrop');
+        openRestoreText(text);
+      }catch(e){ showToast(e.code === 'offline' ? 'No connection' : 'Could not open that backup (' + e.message + ')'); }
+    });
+  }catch(e){
+    body.innerHTML = '<div class="note">' + (e.code === 'auth' ? 'GitHub did not accept the token. Check it in Sync with Muse.'
+      : e.code === 'offline' ? 'No connection. Try again when you are online.' : 'Could not reach GitHub (' + esc(e.message) + ').') + '</div>';
+  }
+}
+document.getElementById('do-cloud-putback').onclick = openCloudPutBack;
+document.getElementById('cloud-close').onclick = ()=> closeSheet('cloud-backdrop');
+function paintCloudRow(){
+  const el = document.getElementById('cloud-sub'); if(!el) return;
+  if(!cloudBackupOn()){ el.textContent = 'Turn on Sync with Muse to back up every day'; return; }
+  const d = cloudLastDay();
+  el.textContent = d === todayYMD() ? 'Every day · saved today'
+    : d ? 'Every day · last saved ' + parseYMD(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'})
+    : 'Every day · first one saves next time you open Ledger';
+}
+paintCloudRow();
 
 // ============================================================
 // v52: Sort uncategorised — one tap per row. Opened from the Home alert,
@@ -11110,7 +11328,7 @@ function invCatHTML(cat){
     '<button class="btn ghost" data-inv-add><i class="ti ti-plus" aria-hidden="true"></i> Add by hand</button></div>';
   if(!S.held.length && !S.past.length && !(S.putIn > 0) && !(S.takenOut > 0)){
     return '<div class="estate"><i class="ti ti-chart-line" aria-hidden="true"></i><div class="et">Nothing in '+esc(C.name)+' yet</div>'+
-      '<div class="es">'+(C.type==='crypto' ? 'Import your Coinbase history file, or add what you hold by hand.' : 'Import the history file from your broker (Pearler, Trading 212 and most others work), or add what you hold by hand.')+'</div></div>'+
+      '<div class="es">'+(C.type==='crypto' ? 'Import your Coinbase history file, or add what you hold by hand.' : 'Import your broker\'s history file (Pearler, Trading 212 and most others), or add by hand.')+'</div></div>'+
       actions;
   }
   const rk = invRange[cat+':'] || '1y';
@@ -11151,7 +11369,7 @@ function invCatHTML(cat){
         '<button class="lrow tap inv-row" data-invsym="'+esc(p.sym)+'"><span class="inv-dot" style="background:'+symColour(p.sym)+'">'+esc(p.sym.slice(0,4))+'</span>'+
         '<div><div class="d1">'+esc(symName(cat,p.sym))+'</div><div class="d2">'+p.first.slice(0,4)+(p.last.slice(0,4)!==p.first.slice(0,4)?'–'+p.last.slice(2,4):'')+' · sold for '+money0(p.sold)+'</div></div>'+
         '<div class="amtcol"><b class="fig '+tone(p.realised)+'">'+signed(p.realised)+'</b><span class="sub">profit</span></div></button>').join('')+'</div></div></div>' : '')+
-    '<p class="note" style="margin-top:14px;">'+(C.type==='crypto' ? 'Values update by themselves when you are online.' : 'Check what each holding is worth on Sundays, or tap one and choose Edit what you hold.')+' Figures are in pounds at each day\'s rate.</p>';
+    '<p class="note" style="margin-top:14px;">'+(C.type==='crypto' ? 'Values update by themselves when you are online.' : 'Update values on Sundays, or tap a holding to edit it.')+' In pounds at each day\'s rate.</p>';
 }
 function invRowHTML(cat, p, total){
   const ser = rangeSeries(invSeries(cat, p.sym), '3m');
@@ -11518,7 +11736,7 @@ function openInvImport(cat, text, fname){
     const sum = k => cash.filter(e=>e.kind===k).reduce((t,e)=>t+e.total,0);
     const cur = invImp.cur;
     document.getElementById('ii-map').innerHTML = '<div class="ii-row"><span>This is a cash statement</span></div>'+
-      '<p class="note" style="margin:0 0 10px;">It shows money going in and out, not which shares you bought, so Ledger adds the money in and out. Your totals and profit will be right; the shares themselves will not be listed.</p>'+
+      '<p class="note" style="margin:0 0 10px;">This file has money in and out, not shares. Totals and profit will be right; shares won\'t be listed.</p>'+
       '<div class="ii-row"><span>Paid in</span><b class="fig">'+cur+' '+sum('deposit').toLocaleString('en-GB',{minimumFractionDigits:2})+'</b></div>'+
       '<div class="ii-row"><span>Taken out</span><b class="fig">'+cur+' '+sum('withdraw').toLocaleString('en-GB',{minimumFractionDigits:2})+'</b></div>'+
       '<div class="ii-row"><span>Result</span><b class="fig">'+(sum('withdraw')-sum('deposit')>=0?'+':'−')+cur+' '+Math.abs(sum('withdraw')-sum('deposit')).toLocaleString('en-GB',{minimumFractionDigits:2})+'</b></div>'+
@@ -11800,6 +12018,252 @@ document.getElementById('add-asset-btn').onclick = ()=>{
   const c = invCats().find(x=> x.type !== 'crypto') || invCats()[0];
   openInvEntry({cat:c.id, kind:'buy', fresh:true, pickCat:true});
 };
+// ============================================================
+// v69: payday countdown, spending calendar, savings pots
+// ============================================================
+
+// ---- Payday countdown (Home, under the net position card) ----
+// Works out when you are next paid from your own Income history: anyone who has
+// paid you 3+ times in the last 4 months on a steady rhythm (weekly, fortnightly,
+// four-weekly, monthly). Then: money in your current and cash accounts, minus the
+// bills due before that day, spread over the days left. Hidden if there's no
+// steady pay to go on - it never guesses a payday.
+function paydayPayers(){
+  const today = parseYMD(todayYMD());
+  const since = ymd(new Date(today.getTime() - 120*86400000));
+  const by = {};
+  for(const t of txns){
+    if(t.dir !== 'in' || t.cat !== 'income' || t.date < since) continue;
+    const k = merchantKey(t.desc) || String(t.desc||'').toLowerCase().trim();
+    if(!k) continue;
+    (by[k] = by[k] || {name:t.desc, list:[]}).list.push(t);
+  }
+  const out = [];
+  for(const k in by){
+    const list = by[k].list.sort((a,b)=> a.date.localeCompare(b.date));
+    // one payment per day (a split payment counts once)
+    const days = [...new Set(list.map(t=>t.date))];
+    if(days.length < 3) continue;
+    const gaps = [];
+    for(let i = 1; i < days.length; i++) gaps.push(Math.round((parseYMD(days[i]) - parseYMD(days[i-1]))/86400000));
+    gaps.sort((a,b)=>a-b);
+    const g = gaps[Math.floor(gaps.length/2)];
+    let cad = null;
+    if(g >= 6 && g <= 8) cad = {days:7, label:'every week'};
+    else if(g >= 13 && g <= 15) cad = {days:14, label:'every 2 weeks'};
+    else if(g >= 27 && g <= 28) cad = {days:28, label:'every 4 weeks'};
+    else if(g >= 29 && g <= 32) cad = {monthly:true, label:'every month'};
+    if(!cad) continue;
+    // steady: most gaps close to the median
+    const steady = gaps.filter(x=> Math.abs(x - g) <= 3).length >= Math.ceil(gaps.length * 0.6);
+    if(!steady) continue;
+    const lastDay = days[days.length-1];
+    const step = d => cad.monthly ? new Date(d.getFullYear(), d.getMonth()+1, parseYMD(lastDay).getDate()) : new Date(d.getTime() + cad.days*86400000);
+    let next = step(parseYMD(lastDay)), guard = 0;
+    while(next <= today && guard++ < 24) next = step(next);
+    // gone quiet (missed two paydays): don't count on it
+    const span = cad.monthly ? 31 : cad.days;
+    if((today - parseYMD(lastDay))/86400000 > span * 2 + 3) continue;
+    const amts = list.map(t=>t.amount).sort((a,b)=>a-b);
+    out.push({name:by[k].name, next, cad, typical:amts[Math.floor(amts.length/2)]});
+  }
+  return out.sort((a,b)=> a.next - b.next);
+}
+function paydayInfo(){
+  const payers = paydayPayers();
+  if(!payers.length) return null;
+  const today = parseYMD(todayYMD());
+  const pay = payers[0];
+  const days = Math.max(1, Math.round((pay.next - today)/86400000));
+  const spendAccts = accts.filter(a=> a.type === 'current' || a.type === 'cash');
+  if(!spendAccts.length) return null;
+  const have = spendAccts.reduce((s,a)=> s + acctBalance(a.id), 0);
+  const skip = new Set(accts.filter(a=> a.type === 'savings' || a.type === 'trading').map(a=>a.id));
+  const bills = [];
+  for(const r of recur){
+    if(!r || !r.nextDue || !(r.amount > 0) || (r.acct && skip.has(r.acct))) continue;
+    let d = parseYMD(r.nextDue), guard = 0;
+    while(d < pay.next && guard++ < 60){
+      if(d >= today) bills.push({name:r.name, amount:r.amount, date:ymd(d)});
+      d = stepCadence(d, r.cadence, r.everyDays);
+    }
+  }
+  bills.sort((a,b)=> a.date.localeCompare(b.date));
+  const billTotal = bills.reduce((s,b)=> s + b.amount, 0);
+  const left = have - billTotal;
+  return {pay, payers, days, have, spendAccts, bills, billTotal, left, perDay: left / days};
+}
+function renderPayday(){
+  const el = document.getElementById('payday'); if(!el) return;
+  let p = null; try{ p = paydayInfo(); }catch(e){ p = null; }
+  if(!p){ el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const day = p.pay.next.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+  const when = p.days === 1 ? 'tomorrow' : 'in ' + p.days + ' days';
+  const short = p.left < 0;
+  el.classList.toggle('short', short);
+  el.innerHTML =
+    '<div class="pd-main"><span class="pd-lab xt">Until payday</span>' +
+      '<b class="fig">' + (short ? '−' : '') + money0(Math.abs(p.left)) + '</b>' +
+      '<span class="pd-per">' + (short ? 'short before ' + esc(day) : 'about ' + money0(Math.max(0, p.perDay)) + ' a day') + '</span></div>' +
+    '<div class="pd-when">' + esc(day) + ' · ' + when + '</div>' +
+    '<div class="pd-more">' +
+      '<div class="pd-row"><span>In ' + p.spendAccts.map(a=>esc(a.name)).join(', ') + '</span><b class="fig">' + money0(p.have) + '</b></div>' +
+      (p.bills.length ? p.bills.map(b=> '<div class="pd-row"><span>' + esc(b.name) + ' · ' + parseYMD(b.date).toLocaleDateString('en-GB',{day:'numeric', month:'short'}) + '</span><b class="fig out">−' + money0(b.amount) + '</b></div>').join('')
+        : '<div class="pd-row"><span>No bills due before then</span><b></b></div>') +
+      '<div class="pd-row pd-tot"><span>Left to spend</span><b class="fig">' + (short ? '−' : '') + money0(Math.abs(p.left)) + '</b></div>' +
+      '<div class="note" style="margin-top:6px;">Next pay: ' + p.payers.map(x=> esc(x.name) + ' ' + x.cad.label + ', about ' + money0(x.typical) + ' (' + x.next.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'}) + ')').join(' · ') + '. Savings and trading accounts are left out.</div>' +
+    '</div>';
+}
+
+// ---- Spending calendar (Spending tab) ----
+let dayFilter = null;   // 'YYYY-MM-DD' while a calendar day is picked
+function renderCal(){
+  const box = document.getElementById('s-cal'); if(!box) return;
+  if(txnQuery){ box.hidden = true; return; }
+  const [y, m] = spendMonth.split('-').map(Number);
+  const first = new Date(y, m-1, 1), nDays = new Date(y, m, 0).getDate();
+  const todayS = todayYMD();
+  const spent = [];
+  for(let d = 1; d <= nDays; d++){
+    const dt = new Date(y, m-1, d);
+    spent.push(ymd(dt) > todayS ? null : Math.max(0, periodTotals(dt, dt).out));
+  }
+  const vals = spent.filter(v=> v > 0).sort((a,b)=>a-b);
+  if(!vals.length){ box.hidden = true; return; }
+  box.hidden = false;
+  // four shades by where the day sits among this month's spending days
+  const q = f => vals[Math.min(vals.length-1, Math.floor(vals.length * f))];
+  const cut = [q(0.25), q(0.5), q(0.8)];
+  const lvl = v => v == null ? 'fut' : v <= 0 ? 'l0' : v <= cut[0] ? 'l1' : v <= cut[1] ? 'l2' : v <= cut[2] ? 'l3' : 'l4';
+  const lead = (first.getDay() + 6) % 7;   // Monday first
+  let cells = '';
+  for(let i = 0; i < lead; i++) cells += '<i class="cal-pad"></i>';
+  for(let d = 1; d <= nDays; d++){
+    const s = ymd(new Date(y, m-1, d)), v = spent[d-1];
+    cells += '<button class="cal-d ' + lvl(v) + (s === dayFilter ? ' sel' : '') + (s === todayS ? ' today' : '') + '" data-day="' + s + '"' + (v == null ? ' disabled' : '') +
+      ' aria-label="' + d + ': ' + (v ? money0(v) : 'nothing') + '">' + d + '</button>';
+  }
+  const busiest = spent.reduce((b, v, i)=> v != null && v > (b.v||0) ? {v, i} : b, {});
+  box.innerHTML =
+    '<div class="cal-head"><b class="xt">Day by day</b><span>' +
+      (dayFilter ? '<button class="rule-link" id="cal-clear">Show all days</button>'
+        : busiest.v ? 'Busiest: ' + (busiest.i+1) + ordinal(busiest.i+1).replace(/^\d+/, '') + ', ' + money0(busiest.v) : '') + '</span></div>' +
+    '<div class="cal-body"><div class="cal-wk"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>' +
+    '<div class="cal-grid">' + cells + '</div>' +
+    '<div class="cal-key"><span>Less</span><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>More</span></div></div>';
+  box.querySelectorAll('.cal-d[data-day]').forEach(b=> b.onclick = e=>{
+    e.stopPropagation();
+    dayFilter = dayFilter === b.dataset.day ? null : b.dataset.day;
+    txnPageSize = TXN_PAGE;   // a day is short: show all of it
+    renderSpend();
+    if(dayFilter) setTimeout(()=>{ const l = document.getElementById('txn-list'); if(l) l.scrollIntoView({behavior:'smooth', block:'start'}); }, 50);
+  });
+  const clr = document.getElementById('cal-clear');
+  if(clr) clr.onclick = e=>{ e.stopPropagation(); dayFilter = null; txnPageSize = TXN_FIRST; renderSpend(); };
+}
+// The month changing, a category chip or a search all clear the picked day.
+const _renderSpendV68 = renderSpend;
+renderSpend = function(){
+  if(dayFilter && dayFilter.slice(0,7) !== spendMonth) dayFilter = null;
+  _renderSpendV68();
+  try{ renderCal(); }catch(e){}
+};
+
+// ---- Savings pots ----
+// Something you're saving for: a name, a target, an optional date, and either an
+// account it lives in (its balance is the progress) or an amount you update.
+// Stored in ledger:pots, carried in backups and undo. Not synced with Muse yet.
+const K_POTS = 'ledger:pots';
+let pots = (()=>{ try{ const v = JSON.parse(localStorage.getItem(K_POTS)); return Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : []; }catch(e){ return []; } })();
+function savePots(){ save(K_POTS, pots); }
+function potHave(p){
+  if(p.acct && accts.some(a=>a.id === p.acct)) return Math.max(0, acctBalance(p.acct));
+  return Math.max(0, Number(p.saved) || 0);
+}
+function potStatus(p){
+  const have = potHave(p), target = Number(p.target) || 0;
+  const pct = target > 0 ? Math.min(1, have / target) : 0;
+  if(have >= target && target > 0) return {have, pct, line:'Done', tone:'good'};
+  if(!p.date) return {have, pct, line:money0(Math.max(0, target - have)) + ' to go', tone:''};
+  const today = parseYMD(todayYMD()), by = parseYMD(p.date);
+  const months = Math.max(0, (by.getFullYear() - today.getFullYear())*12 + (by.getMonth() - today.getMonth()) + (by.getDate() >= today.getDate() ? 0 : -1));
+  const byNice = by.toLocaleDateString('en-GB', {month:'short', year: by.getFullYear() === today.getFullYear() ? undefined : 'numeric'});
+  if(by < today) return {have, pct, line:money0(target - have) + ' to go · was due ' + byNice, tone:'mid'};
+  const need = (target - have) / Math.max(1, months);
+  return {have, pct, line:money0(need) + ' a month to make ' + byNice, tone:''};
+}
+function renderPots(){
+  const sec = document.getElementById('pots-sec'), list = document.getElementById('pots-list');
+  if(!sec || !list) return;
+  sec.hidden = !pots.length;
+  const sub = document.getElementById('pots-sub');
+  if(sub) sub.textContent = pots.length ? pots.length + ' on the go' : 'Nothing yet';
+  if(!pots.length){ list.innerHTML = ''; return; }
+  const tot = pots.reduce((s,p)=> s + potHave(p), 0);
+  const tEl = document.getElementById('pots-total'); if(tEl) tEl.textContent = money0(tot);
+  list.innerHTML = '<div class="card">' + pots.map(p=>{
+    const st = potStatus(p);
+    return '<div class="pot tap" data-pot="' + esc(p.id) + '">' +
+      '<div class="pot-top"><span class="pot-name">' + esc(p.name) + '</span><span class="fig">' + money0(st.have) + ' <small>of ' + money0(Number(p.target)||0) + '</small></span></div>' +
+      '<div class="pot-bar"><i style="width:' + (st.pct*100).toFixed(1) + '%"></i></div>' +
+      '<div class="pot-line ' + st.tone + '">' + esc(st.line) + (p.acct ? ' · in ' + esc((accts.find(a=>a.id===p.acct)||{}).name || 'an account') : '') + '</div></div>';
+  }).join('') + '</div>';
+  list.querySelectorAll('[data-pot]').forEach(r=> r.onclick = ()=> openPot(r.dataset.pot));
+}
+let potEditing = null;
+function openPot(id){
+  const p = id ? pots.find(x=>x.id === id) : null;
+  potEditing = p ? p.id : null;
+  document.getElementById('pot-title').textContent = p ? 'Edit pot' : 'Something to save for';
+  document.getElementById('pot-name').value = p ? p.name : '';
+  document.getElementById('pot-target').value = p ? p.target : '';
+  document.getElementById('pot-date').value = p && p.date ? p.date : '';
+  const sel = document.getElementById('pot-acct');
+  sel.innerHTML = '<option value="">No - I\'ll update the amount</option>' +
+    accts.filter(a=> a.type !== 'trading').map(a=> '<option value="' + esc(a.id) + '">' + esc(a.name) + '</option>').join('');
+  sel.value = p && p.acct ? p.acct : '';
+  document.getElementById('pot-saved').value = p && !p.acct ? (p.saved || '') : '';
+  document.getElementById('pot-del').style.display = p ? '' : 'none';
+  potSavedVis();
+  openSheet('pot-backdrop');
+}
+function potSavedVis(){ document.getElementById('pot-saved-wrap').style.display = document.getElementById('pot-acct').value ? 'none' : ''; }
+document.getElementById('pot-acct').onchange = potSavedVis;
+document.getElementById('pot-save').onclick = ()=>{
+  const name = document.getElementById('pot-name').value.trim();
+  const target = parseFloat(document.getElementById('pot-target').value);
+  if(!name){ showToast('Give it a name'); return; }
+  if(!(target > 0)){ showToast('Add how much you need'); return; }
+  const acct = document.getElementById('pot-acct').value || null;
+  const saved = acct ? 0 : Math.max(0, parseFloat(document.getElementById('pot-saved').value) || 0);
+  const date = document.getElementById('pot-date').value || null;
+  snapshot(potEditing ? 'Edit pot' : 'Add pot');
+  if(potEditing){
+    const p = pots.find(x=>x.id === potEditing);
+    if(p) Object.assign(p, {name, target, date, acct, saved});
+  } else {
+    pots.push({id:'pot' + Date.now().toString(36), name, target, date, acct, saved, created:todayYMD()});
+  }
+  savePots(); closeSheet('pot-backdrop'); render();
+  showToast(potEditing ? 'Saved' : 'Added "' + esc(name) + '"');
+};
+document.getElementById('pot-del').onclick = ()=>{
+  const p = pots.find(x=>x.id === potEditing); if(!p) return;
+  snapshot('Delete pot');
+  const was = pots.slice();
+  pots = pots.filter(x=>x.id !== p.id); savePots();
+  closeSheet('pot-backdrop'); render();
+  showToast('Deleted "' + esc(p.name) + '"', ()=>{ pots = was; savePots(); render(); });
+};
+document.getElementById('pot-cancel').onclick = ()=> closeSheet('pot-backdrop');
+document.getElementById('pots-add').onclick = e=>{ e.stopPropagation(); openPot(null); };
+document.getElementById('open-pots').onclick = ()=> openPot(null);
+
+// Payday details open on a tap, like the other tucked-away parts (v68).
+document.getElementById('payday').onclick = ()=> toggleX('xPay');
+document.getElementById('s-cal').addEventListener('click', e=>{ if(e.target.closest('.cal-head') && !e.target.closest('button')) toggleX('xCalShut'); });
+
 // ============================================================
 // Wiring
 // ============================================================

@@ -1,0 +1,512 @@
+</style>
+
+<!-- ============ SHEET: live rates ============ -->
+<div class="backdrop" id="rates-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Live rates</h2>
+  <p class="note" style="margin:6px 0 14px;">Rates update by themselves once a day.</p>
+  <span class="lab">Base currency</span>
+  <select id="rates-base"></select>
+  <div class="three">
+    <div><span class="lab">Watch</span><select id="rates-c1"></select></div>
+    <div><span class="lab">Watch</span><select id="rates-c2"></select></div>
+    <div><span class="lab">Watch</span><select id="rates-c3"></select></div>
+  </div>
+  <button class="btn" id="rates-refresh" style="margin-top:12px;">Refresh rates</button>
+  <div id="rates-board" style="margin-top:14px;"></div>
+  <button class="btn ghost" id="rates-close">Done</button>
+</div></div>
+
+<!-- ============ SHEET: fix an import's currency ============ -->
+<div class="backdrop" id="fximport-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Fix an import's currency</h2>
+  <p class="note" style="margin:6px 0 14px;">For a statement read in the wrong currency. Only those payments change, with undo. Main currency: <b id="fximp-target2"></b>.</p>
+  <span class="lab">Account</span>
+  <select id="fximp-acct"></select>
+  <span class="lab">Those figures were really in</span>
+  <select id="fximp-from"></select>
+  <div class="two">
+    <div><span class="lab">From date (optional)</span><input type="date" id="fximp-d1"></div>
+    <div><span class="lab">To date (optional)</span><input type="date" id="fximp-d2"></div>
+  </div>
+  <span class="lab">How many <b id="fximp-target"></b> is one <b id="fximp-source"></b> worth?</span>
+  <input type="number" id="fximp-rate" inputmode="decimal" step="0.000001" placeholder="e.g. 0.5234">
+  <button class="btn ghost" id="fximp-fetch">Get today's rate</button>
+  <div id="fximp-preview" class="warn" style="margin-top:12px;"></div>
+  <button class="btn" id="fximp-go">Convert these transactions</button>
+  <button class="btn ghost" id="fximp-close">Done</button>
+</div></div>
+
+<!-- ============ SHEET: second currency ============ -->
+<div class="backdrop" id="secondary-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Second currency</h2>
+  <p class="note" style="margin:6px 0 14px;">Shows a rough conversion in small print under every figure. Your <b id="sec-main"></b> figures never change.</p>
+
+  <span class="lab">Show alongside</span>
+  <select id="sec-select"></select>
+
+  <button class="btn ghost" id="sec-fetch" hidden>Get today's rate</button>
+  <div id="sec-rate-box"></div>
+  <p hidden class="note" style="margin:-2px 0 12px;"></p>
+
+  <div id="sec-manual-wrap" style="display:none;">
+    <span class="lab" id="sec-manual-lab"></span>
+    <input type="number" id="sec-manual" inputmode="decimal" step="0.0001" placeholder="e.g. 1.94">
+    <div id="sec-manual-check" class="note" style="margin:-4px 0 10px;"></div>
+    <button class="btn ghost" id="sec-manual-go">Use this rate</button>
+  </div>
+
+  <button class="btn" id="sec-save" style="display:none;">Turn it on</button>
+  <button class="btn ghost" id="sec-off" style="display:none;">Turn it off</button>
+  <button class="btn ghost" id="sec-close">Done</button>
+</div></div>
+
+<!-- ============ SHEET: currency ============ -->
+<div class="backdrop" id="currency-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Currency</h2>
+  <p class="note" style="margin:6px 0 14px;">Now in <b id="cur-current"></b>. Switching converts every figure at today's rate.</p>
+  <span class="lab">Change to</span>
+  <select id="cur-select"></select>
+  <button class="btn ghost" id="cur-fetch">Get today's rate</button>
+  <div id="cur-rate-box"></div>
+  <div id="cur-manual-wrap" style="display:none;">
+    <span class="lab" id="cur-manual-lab">Rate</span>
+    <input type="number" id="cur-manual" inputmode="decimal" step="0.0001" placeholder="1.9400">
+    <div id="cur-manual-check" class="note" style="margin:-4px 0 10px;"></div>
+    <button class="btn ghost" id="cur-manual-go">Use this rate</button>
+  </div>
+  <button class="btn" id="cur-apply" style="display:none;">Convert</button>
+  <div id="cur-log"></div>
+</div></div>
+
+<!-- ============ SHEET: period summary ============ -->
+<div class="backdrop" id="period-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="per-title">Summary</h2>
+  <div class="mark-sub" style="text-align:left; margin:4px 0 0;" id="per-range"></div>
+
+  <div class="headline" style="padding:16px 0 2px;">
+    <div class="lab">Net</div>
+    <div class="amt" id="per-net">£0</div>
+    <div class="delta" id="per-verdict"></div>
+  </div>
+
+  <div class="split">
+    <div class="stat"><div class="lab">In</div><div class="val fig in" id="per-in">£0</div></div>
+    <div class="stat"><div class="lab">Out</div><div class="val fig out" id="per-out">£0</div></div>
+  </div>
+
+  <div class="rule">Where it went</div>
+  <div id="per-cats"></div>
+
+  <div class="rule">Biggest</div>
+  <div id="per-big"></div>
+
+  <div id="per-days"></div>
+</div></div>
+
+<!-- ============ SHEET: what do you want to add ============ -->
+<div class="backdrop" id="add-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Add</h2>
+  <div class="card" style="margin-top:12px;">
+    <div class="lrow tap" data-add="txn"><div><div class="d1">Transaction</div><div class="d2">Something you spent, received or moved</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" data-add="recur"><div><div class="d1">Subscription or bill</div><div class="d2">Anything that leaves on a schedule</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" data-add="acct"><div><div class="d1">Account</div><div class="d2">A current account, savings pot or cash</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" data-add="asset"><div><div class="d1">Asset</div><div class="d2">An investment or anything that changes value</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+  </div>
+</div></div>
+
+<!-- ============ SHEET: edit one account ============ -->
+<div class="backdrop" id="acctedit-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="ae-title">Account</h2>
+  <!-- v47: what the account holds NOW, first. The sheet used to open on the
+       starting balance and its date, which read as if that were the account. -->
+  <div id="ae-now"></div>
+  <details id="ae-details" style="margin-bottom:12px;">
+  <summary id="ae-details-sum" style="font-size:13px; color:var(--text2); padding:10px 0; cursor:pointer;">Name, type and starting point</summary>
+  <span class="lab">Name</span>
+  <input type="text" id="ae-name" autocapitalize="sentences" autocorrect="off" spellcheck="false">
+  <div class="two">
+    <div><span class="lab">Type</span><select id="ae-type">
+      <option value="current">Current</option><option value="savings">Savings</option>
+      <option value="cash">Cash</option><option value="trading">Trading capital</option>
+    </select></div>
+    <div><span class="lab" id="ae-open-lab">Balance</span><input type="number" id="ae-open" inputmode="decimal" step="0.01"></div>
+  </div>
+  <span class="lab" id="ae-date-lab">As of</span>
+  <input type="date" id="ae-opendate">
+  <p class="note" style="margin:-4px 0 12px;">This is what the account held on that date. Only payments after it change the balance.</p>
+  <button class="btn ghost" id="ae-today" style="margin-bottom:12px;">Use today's balance instead</button>
+  <div id="ae-note"></div>
+  <button class="btn" id="ae-save">Save</button>
+  <button class="btn danger" id="ae-delete">Delete this account</button>
+  </details>
+</div></div>
+
+<!-- ============ SHEET: add / edit transaction ============ -->
+<div class="backdrop" id="txn-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="txn-sheet-title">Add a transaction</h2>
+  <div class="seg" id="dir-seg" style="margin-top:12px;">
+    <button data-dir="out" class="on">Spent</button>
+    <button data-dir="in">Received</button>
+    <button data-dir="transfer">Moved</button>
+  </div>
+  <span class="lab">Amount</span>
+  <input type="number" id="t-amount" inputmode="decimal" step="0.01" placeholder="0.00">
+  <div id="t-note" style="display:none; margin-bottom:10px;"></div>
+  <span class="lab">What was it</span>
+  <input type="text" id="t-desc" placeholder="Tesco, rent, coffee..." autocapitalize="sentences" autocorrect="off" spellcheck="false">
+  <div class="two">
+    <div><span class="lab" id="t-acct-lab">Account</span><select id="t-acct"></select></div>
+    <div id="t-to-wrap" style="display:none;"><span class="lab">To</span><select id="t-to"></select></div>
+    <div id="t-cat-wrap"><span class="lab">Category</span><select id="t-cat"></select></div>
+  </div>
+  <!-- v53: your own note. Required for Other and Transfers, so a vague
+       category always says what the money was actually for. -->
+  <div id="t-memo-wrap">
+    <span class="lab" id="t-memo-lab">Note (optional)</span>
+    <input type="text" id="t-memo" maxlength="80" placeholder="What was it for?" autocapitalize="sentences" autocorrect="on" spellcheck="true">
+    <div class="memo-err" id="t-memo-err" hidden>Add a short note. Other and Transfers need one so you know what it was later.</div>
+  </div>
+  <span class="lab">Date</span>
+  <input type="date" id="t-date">
+  <button class="btn" id="t-save">Save</button>
+  <button class="btn danger" id="t-delete" style="display:none;">Delete this transaction</button>
+</div></div>
+
+<!-- ============ v58: investment category ============ -->
+<div class="backdrop" id="invcat-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="ic-title">New category</h2>
+  <span class="lab" style="margin-top:12px;">Name</span>
+  <input type="text" id="ic-name" placeholder="Shares, Property, Gold…" autocapitalize="words" autocorrect="off" spellcheck="false" maxlength="30">
+  <span class="lab">What kind</span>
+  <div class="chips" id="ic-type">
+    <button class="chip" data-type="crypto">Crypto</button><button class="chip" data-type="shares">Shares and funds</button><button class="chip" data-type="other">Something else</button>
+  </div>
+  <p class="note" style="margin:6px 0 0;">Crypto prices update by themselves. For anything else you log its value now and then.</p>
+  <button class="btn" id="ic-save" style="margin-top:14px;">Save</button>
+  <button class="btn danger" id="ic-delete">Delete this category</button>
+</div></div>
+
+<!-- ============ v58: one investment entry ============ -->
+<div class="backdrop" id="inventry-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="ie-title">Add</h2>
+  <div id="ie-cat-wrap" style="display:none;"><span class="lab" style="margin-top:12px;">Category</span><select id="ie-cat"></select></div>
+  <div id="ie-hold-wrap">
+    <span class="lab" style="margin-top:12px;">Which holding</span>
+    <select id="ie-hold"></select>
+  </div>
+  <div id="ie-new" class="two">
+    <div><span class="lab">Code</span><input type="text" id="ie-code" placeholder="VAS" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="12"></div>
+    <div><span class="lab">Name <i class="opt">optional</i></span><input type="text" id="ie-name" placeholder="Vanguard Australian Shares" autocorrect="off" spellcheck="false"></div>
+  </div>
+  <div class="chips" id="ie-kind" style="margin-top:12px;">
+    <button class="chip" data-kind="buy">Bought</button><button class="chip" data-kind="sell">Sold</button><button class="chip" data-kind="value">Value now</button><button class="chip" data-kind="reward">Dividend</button>
+  </div>
+  <div class="two">
+    <div><span class="lab">Date</span><input type="date" id="ie-date"></div>
+    <div id="ie-qty-wrap"><span class="lab" id="ie-qty-lab">How many</span><input type="text" id="ie-qty" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+  </div>
+  <div class="two">
+    <div><span class="lab" id="ie-total-lab">Total paid</span><input type="text" id="ie-total" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+    <div><span class="lab">Currency</span><select id="ie-cur"></select></div>
+  </div>
+  <div id="ie-fee-wrap"><span class="lab">Fee <i class="opt">optional</i></span><input type="text" id="ie-fee" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+  <p class="note" id="ie-hint" style="margin:6px 0 0;"></p>
+  <p class="note" id="ie-src" style="margin:4px 0 0;"></p>
+  <div class="memo-err" id="ie-err" style="margin-top:8px;"></div>
+  <button class="btn" id="ie-save" style="margin-top:12px;">Save</button>
+  <button class="btn danger" id="ie-delete">Delete this entry</button>
+</div></div>
+
+<!-- ============ v59: edit what you hold ============ -->
+<div class="backdrop" id="invhold-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="ih-title">Holding</h2>
+  <span class="lab" style="margin-top:12px;">Name <i class="opt">code <span id="ih-code"></span></i></span>
+  <input type="text" id="ih-name" autocorrect="off" spellcheck="false" placeholder="Optional">
+  <div id="ih-qty-wrap"><span class="lab">How many you hold now</span><input type="text" id="ih-qty" inputmode="decimal" autocomplete="off"></div>
+  <span class="lab">What it is all worth now (£)</span>
+  <input type="text" id="ih-val" inputmode="decimal" autocomplete="off">
+  <p class="note" id="ih-note" style="margin:6px 0 0;"></p>
+  <button class="btn" id="ih-save" style="margin-top:12px;">Save</button>
+</div></div>
+
+<!-- ============ v59: put hand-logged assets into categories ============ -->
+<div class="backdrop" id="invmove-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Put these in your categories</h2>
+  <p class="note" style="margin:4px 0 12px;">Each one moves into a category with its history. Nothing is deleted, and you can undo straight after.</p>
+  <div id="mv-list"></div>
+  <button class="btn" id="mv-go" style="margin-top:12px;">Move them</button>
+  <button class="btn ghost" data-close-sheet="invmove-backdrop">Not now</button>
+</div></div>
+
+<!-- ============ v58: any broker's history file ============ -->
+<div class="backdrop" id="invimp-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="ii-title">Import</h2>
+  <p class="note" style="margin:4px 0 10px;"><span id="ii-file"></span>. Ledger matched the columns below. Change any that look wrong.</p>
+  <div class="card ii-map" id="ii-map"></div>
+  <div class="ii-row" style="margin-top:8px;"><span>Money in the file is in</span><select id="ii-cur"></select></div>
+  <div id="ii-preview" style="margin-top:12px;"></div>
+  <button class="btn" id="ii-go" style="margin-top:12px;">Add</button>
+  <button class="btn ghost" id="ii-cancel">Cancel</button>
+</div></div>
+
+<!-- ============ v58: edit a spending category ============ -->
+<div class="backdrop" id="catedit-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Edit category</h2>
+  <span class="lab" style="margin-top:12px;">Name</span>
+  <input type="text" id="ce-name" autocapitalize="sentences" autocorrect="off" spellcheck="false" maxlength="30">
+  <span class="lab">Kind</span>
+  <select id="ce-kind"><option value="spend">Spending</option><option value="income">Money in</option><option value="transfer">Transfer</option></select>
+  <span class="lab">Colour</span>
+  <div class="ce-swatches" id="ce-swatches"></div>
+  <p class="note" id="ce-count" style="margin:8px 0 0;"></p>
+  <button class="btn" id="ce-save" style="margin-top:12px;">Save</button>
+</div></div>
+
+<!-- ============ SHEET: accounts ============ -->
+<div class="backdrop" id="acct-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Accounts</h2>
+  <p class="note" style="margin-bottom:12px;">Starting balance plus every payment since gives the balance.</p>
+  <div id="acct-manage"></div>
+  <button class="btn" id="a-add">Add an account</button>
+</div></div>
+
+<!-- ============ SHEET: import ============ -->
+<div class="backdrop" id="import-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Import from bank</h2>
+  <div id="imp-step1">
+    <p class="note" style="margin-bottom:12px;">Download a CSV from Wise, then pick it here. It stays on this phone.</p>
+    <span class="lab">Which account is this statement from?</span>
+    <select id="imp-acct"></select>
+    <!-- Per account, because they are rarely imported on the same day. -->
+    <div class="imp-from" id="imp-from"></div>
+    <p class="note" style="margin:-4px 0 12px;">Importing only adds. It never changes or replaces what's already here.</p>
+    <input type="file" id="imp-file" accept=".csv,text/csv">
+  </div>
+
+  <div id="imp-step2" style="display:none;">
+    <p class="note" style="margin-bottom:10px;">Tell Ledger what each column holds. It only needs a date, a description and the money.</p>
+    <div class="scrollx"><table class="prev" id="imp-table"></table></div>
+    <div class="two" style="margin-top:14px;">
+      <div><span class="lab">Date format</span><select id="imp-datefmt">
+        <option value="dmy">31/01/2026</option><option value="mdy">01/31/2026</option>
+        <option value="ymd">2026-01-31</option><option value="dmy-txt">31 Jan 2026</option>
+      </select></div>
+      <div><span class="lab">Has a header row</span><select id="imp-header">
+        <option value="yes">Yes</option><option value="no">No</option>
+      </select></div>
+    </div>
+    <span class="lab" style="margin-top:14px;">Amounts in this file are in</span>
+    <select id="imp-cur"></select>
+    <div id="imp-fx-row" style="display:none;">
+      <span class="lab">How many <b id="imp-fx-target"></b> is one <b id="imp-fx-source"></b> worth?</span>
+      <input type="number" id="imp-rate" inputmode="decimal" step="0.000001" placeholder="e.g. 0.5234">
+      <button class="btn ghost" id="imp-rate-fetch" hidden>Get today's rate</button>
+      <div id="imp-fx-note" class="note" style="margin-top:8px;"></div>
+    </div>
+    <div id="imp-multi"></div>
+    <div id="imp-desc-preview"></div>
+    <div id="imp-summary" class="warn"></div>
+    <button class="btn" id="imp-go">Import</button>
+    <button class="btn ghost" id="imp-back">Choose a different file</button>
+  </div>
+</div></div>
+
+<!-- ============ SHEET: balance check ============ -->
+<div class="backdrop" id="check-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Balance check</h2>
+  <p class="note" style="margin-bottom:14px;">Type what your bank app says. It catches anything missing early.</p>
+  <span class="lab">Account</span>
+  <select id="c-acct"></select>
+  <span class="lab">What the bank says right now</span>
+  <input type="number" id="c-actual" inputmode="decimal" step="0.01" placeholder="0.00">
+  <div id="c-result"></div>
+  <button class="btn ghost" id="c-compare">Compare</button>
+  <button class="btn" id="c-fix" style="display:none;">Add an adjustment to match</button>
+</div></div>
+
+<!-- ============ SHEET: categories and rules ============ -->
+<div class="backdrop" id="rules-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Categories and rules</h2>
+  <p class="note" style="margin-bottom:12px;">A rule files a shop for you. "costa" → Eating out means you never sort a coffee again.</p>
+  <div class="rule">Rules <b id="rules-count"></b></div>
+  <div id="rules-list"></div>
+  <div class="two" style="margin-top:10px;">
+    <div><span class="lab">When it contains</span><input type="text" id="r-match" placeholder="costa" autocapitalize="sentences" autocorrect="off" spellcheck="false"></div>
+    <div><span class="lab">File it as</span><select id="r-cat"></select></div>
+  </div>
+  <button class="btn ghost" id="r-add">Add rule</button>
+  <button class="btn ghost" id="r-recat">Re-scan uncategorised transactions</button>
+  <p class="note" style="margin-top:-4px;">Ledger knows hundreds of UK shops. This sorts anything still blank.</p>
+
+  <div class="rule">Categories</div>
+  <div id="cat-manage"></div>
+  <div class="two" style="margin-top:10px;">
+    <div><span class="lab">New category</span><input type="text" id="cat-new" placeholder="Coffee" autocapitalize="sentences" autocorrect="off" spellcheck="false"></div>
+    <div><span class="lab">Kind</span><select id="cat-kind"><option value="spend">Spending</option><option value="income">Income</option></select></div>
+  </div>
+  <button class="btn ghost" id="cat-add">Add category</button>
+</div></div>
+
+<!-- ============ SHEET: subscriptions and bills ============ -->
+<div class="backdrop" id="recur-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Subscriptions and bills</h2>
+  <p class="note" style="margin-bottom:12px;">Posted on the due date, then swapped for the real one when you import. Nothing counts twice.</p>
+  <div id="recur-summary"></div>
+  <div id="recur-list"></div>
+
+  <div class="rule" id="recur-form-title">Add one</div>
+  <span class="lab">Name</span>
+  <input type="text" id="rc-name" placeholder="Spotify" autocapitalize="sentences" autocorrect="off" spellcheck="false">
+  <div class="two">
+    <div><span class="lab">Amount</span><input type="number" id="rc-amount" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+    <div><span class="lab">How often</span><select id="rc-cadence">
+      <option value="monthly">Monthly (same date)</option>
+      <option value="days">Every N days</option>
+      <option value="weekly">Weekly</option>
+      <option value="fortnightly">Every 2 weeks</option><option value="quarterly">Quarterly</option>
+      <option value="yearly">Yearly</option></select></div>
+  </div>
+  <div id="rc-days-row" style="display:none;">
+    <span class="lab">Days between payments</span>
+    <div class="chiprow" id="rc-daypick">
+      <button type="button" class="chip" data-days="28">28</button>
+      <button type="button" class="chip" data-days="30">30</button>
+      <button type="button" class="chip" data-days="31">31</button>
+      <button type="button" class="chip" data-days="14">14</button>
+      <button type="button" class="chip" data-days="7">7</button>
+    </div>
+    <input type="number" id="rc-days" inputmode="numeric" step="1" min="1" max="366" placeholder="30">
+    <p class="note" style="margin:-4px 0 4px;">A fixed gap, like a 28-day cycle. Pick Monthly if it's always the same date.</p>
+  </div>
+  <div class="two">
+    <div><span class="lab">Next due</span><input type="date" id="rc-due"></div>
+    <div><span class="lab">Category</span><select id="rc-cat"></select></div>
+  </div>
+  <span class="lab">Comes out of</span>
+  <select id="rc-acct"></select>
+  <label class="mf-check" style="margin-top:10px;">
+    <input type="checkbox" id="rc-auto">
+    Deduct it automatically when it falls due
+    <s style="display:block; text-decoration:none; font-size:11px; color:var(--text3); margin-top:3px;">
+      Off is usually right. Ledger shows it as due, then records it for real when
+      it appears on a statement.</s>
+  </label>
+  <p class="note" style="margin:-4px 0 4px;">Added on the due date so your balance stays right. The real charge replaces it when you import.</p>
+  <span class="lab">Appears on your statement as <span style="text-transform:none; letter-spacing:0; color:var(--text3);">— optional</span></span>
+  <input type="text" id="rc-match" placeholder="spotify" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <p class="note" style="margin:-4px 0 4px;">Helps Ledger spot the real charge and price rises. Leave blank to use the name.</p>
+  <button class="btn" id="rc-save">Save</button>
+  <button class="btn danger" id="rc-delete" style="display:none;">Delete this item</button>
+</div></div>
+
+<!-- ============ SHEET: budgets ============ -->
+<div class="backdrop" id="budget-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Budget and insights</h2>
+  <div id="insights"></div>
+  <div class="rule">Your limits</div>
+  <p class="note" style="margin-bottom:12px;">Set limits only where you want them. Leave the rest blank.</p>
+  <div id="budget-suggest"></div>
+  <div id="budget-form"></div>
+  <div id="budget-note"></div>
+  <button class="btn" id="bud-save">Save budgets</button>
+</div></div>
+
+<!-- ============ SHEET: export by period ============ -->
+<div class="backdrop" id="export-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Export by week or month</h2>
+  <p class="note" style="margin-bottom:14px;">One row per period and per category, ready for a spreadsheet. Refunds are already taken off.</p>
+  <div id="export-opts"></div>
+  <button class="btn ghost" id="export-close">Close</button>
+</div></div>
+
+<!-- ============ SHEET: Sunday check-in ============ -->
+<div class="backdrop" id="week-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Your weekly five minutes</h2>
+  <p class="note" id="week-intro" style="margin-bottom:14px;"></p>
+  <div id="week-steps"></div>
+  <div id="week-recap"></div>
+  <button class="btn" id="week-done">Done for this week</button>
+  <button class="btn ghost" id="week-later">Remind me tomorrow</button>
+</div></div>
+
+<!-- ============ SHEET: monthly review ============ -->
+<div class="backdrop" id="month-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="month-title">Close off the month</h2>
+  <p class="note" id="month-intro" style="margin-bottom:14px;"></p>
+  <div id="month-steps"></div>
+  <div id="month-balances"></div>
+  <div id="month-goal-result"></div>
+  <div class="rule">Next month, I want to</div>
+  <select id="mg-kind"></select>
+  <div id="mg-extra"></div>
+  <button class="btn ghost" id="mg-save">Set this as next month's goal</button>
+  <button class="btn" id="month-done">Done</button>
+  <button class="btn ghost" id="month-later">Remind me tomorrow</button>
+</div></div>
+
+<!-- ============ SHEET: asset ============ -->
+<div class="backdrop" id="asset-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="asset-title">Add an asset</h2>
+  <div id="asset-new">
+    <span class="lab">Name</span>
+    <input type="text" id="as-name" placeholder="S&P 500 index fund" autocapitalize="sentences" autocorrect="off" spellcheck="false">
+    <div class="two">
+      <div><span class="lab">Kind</span><select id="as-type">
+        <option value="investment">Investment</option><option value="crypto">Crypto</option>
+        <option value="pension">Pension</option><option value="property">Property</option>
+        <option value="other">Other</option></select></div>
+      <div><span class="lab">First put in</span><input type="number" id="as-initial" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+    </div>
+    <span class="lab">On</span>
+    <input type="date" id="as-date">
+    <button class="btn" id="as-save">Add asset</button>
+  </div>
+
+  <div id="asset-detail" style="display:none;">
+    <div class="split" style="margin-top:4px;">
+      <div class="stat"><div class="lab">Put in</div><div class="val fig" id="ad-invested">£0</div></div>
+      <div class="stat"><div class="lab">Worth now</div><div class="val fig" id="ad-value">£0</div></div>
+    </div>
+    <div class="warn" id="ad-verdict" style="margin-top:12px;"></div>
+    <div class="rule">Log this week's value</div>
+    <input type="number" id="ad-newval" inputmode="decimal" step="0.01" placeholder="What it is worth today">
+    <button class="btn" id="ad-logval">Save reading</button>
+    <div class="rule">Put more in</div>
+    <input type="number" id="ad-newcontrib" inputmode="decimal" step="0.01" placeholder="Amount added">
+    <button class="btn ghost" id="ad-logcontrib">Record contribution</button>
+    <div class="rule">History</div>
+    <div id="ad-history"></div>
+    <div class="rule">Counted twice?</div>
+    <p class="note" style="margin:0 0 8px;">Already in Crypto or Stocks? Mark it so it isn't counted twice. It's kept.</p>
+    <div class="ad-cover" id="ad-cover">
+
+    </div>
+    <button class="btn danger" id="ad-delete">Delete this asset</button>
+  </div>
+</div></div>
+
+<script>

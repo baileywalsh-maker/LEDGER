@@ -1,0 +1,545 @@
+</style>
+<style id="compact">
+/* v68 compact look (Bailey picked "B", 21 Nov 2026). Nothing is removed:
+   every trimmed part opens when its card or title is tapped. Open/closed is
+   remembered in ledger:homefold (a look setting: travels with backups like sound):
+   xHero, xFree, xDue, xCmp, xNw. Body classes x-hero etc. survive re-renders. */
+.hero{padding:14px 14px 12px; border-radius:20px; cursor:pointer;}
+.hero-amt{font-size:36px; margin-top:2px;}
+.hero-sub{font-size:12px; margin-top:4px;}
+.hero-split{gap:8px; margin-top:10px;}
+.tile{padding:8px 12px; border-radius:13px;}
+.hero-foot.running{padding-top:10px !important; margin-top:12px !important;}
+body:not(.x-hero) #net-delta, body:not(.x-hero) #m-running{display:none !important;}
+.xt::after{content:""; display:inline-block; width:6px; height:6px; margin:0 0 2px 7px; border-right:1.8px solid var(--text3); border-bottom:1.8px solid var(--text3); transform:rotate(45deg); transition:transform .2s;}
+body.x-hero .hero-lab.xt::after, body.x-free .fr-head .xt::after, body.x-cmp .cmp-head .xt::after, body.x-nw #nw-x.xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+#week-chip{padding:10px 14px !important; border-radius:18px; margin-top:10px !important;}
+#week-chip .wc-ring, #week-chip .wc-ring svg{width:40px; height:40px;}
+.sort-alert{margin-top:10px; padding:10px 14px !important; border-radius:16px !important;}
+.sa-short{display:none;}
+/* check-in and sorting side by side when both are showing */
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip.on,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #home-warn{display:inline-flex !important; vertical-align:top; width:calc(50% - 4px); box-sizing:border-box; margin-top:10px !important;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #home-warn{margin-left:4px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip.on{padding:8px 10px !important; gap:8px; align-items:center; min-height:54px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-sub,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip-go{display:none !important;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-title{white-space:nowrap; font-size:12.5px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-ring,
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) #week-chip .wc-ring svg{width:34px; height:34px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sort-alert{margin:0 !important; min-height:54px; padding:8px 10px !important; gap:8px;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-t > b:not(.sa-short),
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-t small{display:none;}
+#view-home:has(#week-chip.on):has(#home-warn > .sort-alert:only-child) .sa-short{display:block; font-size:13px;}
+.freedom{padding:12px 14px; margin-top:10px; border-radius:20px;}
+.fr-head{cursor:pointer;}
+.fr-g{padding:8px 6px !important;}
+.fr-g svg{height:64px !important; width:auto !important;}
+body:not(.x-free) .fr-line, body:not(.x-free) .fr-key{display:none !important;}
+.rule{padding-top:16px !important; padding-bottom:6px !important;}
+.card{border-radius:16px;}
+.lrow{padding-top:8px !important; padding-bottom:8px !important;}
+.dayhdr{padding:8px 0 0; font-size:10.5px;}
+.countdown{width:34px !important; height:34px !important;}
+body:not(.x-due) #sub-findings, body:not(.x-due) #committed-block .total-card{display:none !important;}
+#due-x{display:none; width:100%; margin-top:8px; min-height:40px; border:1px solid var(--line); border-radius:14px; background:var(--surface); color:var(--text2); font:inherit; font-size:13px; font-weight:700;}
+#due-x.on{display:block;} #due-x.alert{color:var(--brass); border-color:rgba(217,180,74,0.4);}
+.headline{padding:12px 0 2px;}
+.cmp{padding:12px 14px; margin-top:10px; border-radius:20px; cursor:pointer;}
+body:not(.x-cmp) .cmp-row, body:not(.x-cmp) .cmp-foot, body:not(.x-cmp) .cmp-moves{display:none !important;}
+body:not(.x-cmp) .cmp-line{margin-bottom:0;}
+.catrow{padding:6px 6px;}
+.uncat-btn{margin-top:10px !important;}
+#nw-card{padding-top:12px !important; padding-bottom:10px !important; cursor:pointer;}
+#nw-x{font-size:12px; color:var(--text3); font-weight:600;}
+body:not(.x-nw) #nw-verdict{display:none !important;}
+.inv-cards{display:grid !important; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px;}
+.inv-cards .inv-addcat{grid-column:1 / -1;}
+.inv-card{padding:12px 14px 10px; border-radius:18px;}
+.inv-cs{font-size:11.5px !important;}
+/* v69: payday countdown */
+.payday{display:block; width:100%; text-align:left; margin-top:10px; padding:10px 14px; border-radius:18px; border:1px solid var(--line); background:var(--surface); color:var(--text); font:inherit; cursor:pointer;}
+.payday[hidden]{display:none;}
+.pd-main{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.pd-lab{font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.06em;}
+.pd-main b{font-family:var(--display); font-size:20px; font-weight:600; margin-left:auto;}
+.pd-per{font-size:12.5px; color:var(--text2);}
+.pd-when{font-size:12px; color:var(--text3); margin-top:1px;}
+.payday.short .pd-main b{color:var(--out);}
+.pd-more{display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--line);}
+body.x-pay .pd-more{display:block;}
+body.x-pay .payday .xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+.pd-row{display:flex; justify-content:space-between; gap:10px; font-size:13px; color:var(--text2); padding:3px 0;}
+.pd-row b{color:var(--text); font-weight:600; white-space:nowrap;} .pd-row b.out{color:var(--out);}
+.pd-tot{border-top:1px solid var(--line); margin-top:4px; padding-top:6px; color:var(--text); font-weight:700;}
+/* v69: spending calendar */
+.cal{margin-top:10px; padding:12px 14px; border-radius:20px; background:var(--surface); border:1px solid var(--line);}
+.cal[hidden]{display:none;}
+.cal-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; cursor:pointer;}
+.cal-head b{font-size:15px; font-weight:800;} .cal-head span{font-size:12px; color:var(--text3);}
+body.x-calshut .cal-body{display:none;}
+body:not(.x-calshut) .cal-head .xt::after{transform:rotate(-135deg); margin-bottom:-2px;}
+.cal-wk, .cal-grid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px;}
+.cal-wk{margin-top:10px; font-size:10.5px; color:var(--text3); text-align:center; font-weight:700;}
+.cal-grid{margin-top:5px;}
+.cal-d{aspect-ratio:1; border:0; border-radius:9px; font:600 12px var(--sans, inherit); color:var(--text2); background:var(--surface2); cursor:pointer; padding:0;}
+.cal-d.l1{background:rgba(217,180,74,.18); color:var(--text);} .cal-d.l2{background:rgba(217,180,74,.36); color:var(--text);}
+.cal-d.l3{background:rgba(217,180,74,.6); color:#15171b;} .cal-d.l4{background:#d9b44a; color:#15171b;}
+.cal-d.fut{background:none; color:var(--text3); opacity:.45; cursor:default;}
+.cal-d.today{box-shadow:inset 0 0 0 1.5px var(--text2);}
+.cal-d.sel{box-shadow:0 0 0 2px var(--bg), 0 0 0 4px var(--brass);}
+.cal-key{display:flex; justify-content:flex-end; align-items:center; gap:4px; margin-top:8px; font-size:10.5px; color:var(--text3);}
+.cal-key i{width:12px; height:12px; border-radius:3px; display:block;}
+.cal-key i.l1{background:rgba(217,180,74,.18);} .cal-key i.l2{background:rgba(217,180,74,.36);} .cal-key i.l3{background:rgba(217,180,74,.6);} .cal-key i.l4{background:#d9b44a;}
+/* v69: savings pots */
+#pots-sec[hidden]{display:none;}
+.pot{padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer;} .pot:last-child{border-bottom:0;}
+.pot-top{display:flex; justify-content:space-between; gap:10px; align-items:baseline;}
+.pot-name{font-weight:700; font-size:14px;} .pot-top .fig{font-weight:600; font-size:14px; white-space:nowrap;} .pot-top small{color:var(--text3); font-weight:500;}
+.pot-bar{height:6px; border-radius:4px; background:var(--surface2); margin:7px 0 5px; overflow:hidden;} .pot-bar i{display:block; height:100%; background:var(--brass); border-radius:4px;}
+.pot-line{font-size:12px; color:var(--text3);} .pot-line.good{color:var(--in);} .pot-line.mid{color:var(--brass);}
+</style>
+</head>
+<body>
+<!-- v55: opening screen. Painted before anything else loads, then fades. -->
+<div id="splash" aria-hidden="true">
+  <svg class="sp-logo" width="72" height="72" viewBox="0 0 1024 1024" aria-hidden="true"><path d="M372 270h96v330h196v88H372z" fill="#eef0f3"/><rect x="372" y="742" width="292" height="26" rx="13" fill="#d9b44a"/></svg>
+  <div class="sp-mark">LEDGER</div>
+  <div class="sp-rule"><i></i></div>
+  <div class="sp-sub">Every pound, accounted for</div>
+</div>
+
+<!-- v50: one header and a top tab switcher, the same frame as COACH. More lives
+     behind the gear so the three money views get the whole switcher. -->
+<header class="topbar">
+  <button id="bk-pill" class="bk-pill" aria-label="Backup status"></button>
+  <h1 class="wordmark">LEDGER</h1>
+  <div class="tb-right">
+    <button id="tb-search" class="tb-icon" aria-label="Search transactions"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+    <button id="tb-more" class="tb-icon" aria-label="Settings and data"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+  </div>
+</header>
+<div class="mark-sub" id="view-sub"></div>
+<div class="tabs" role="tablist" aria-label="View">
+  <button role="tab" data-view="home" class="on">Ledger</button>
+  <button role="tab" data-view="spend">Spending</button>
+  <button role="tab" data-view="assets">Assets</button>
+</div>
+
+<!-- ================= HOME ================= -->
+<div id="view-home">
+  <div class="hero">
+    <div class="hero-lab xt">Net position</div>
+    <div class="hero-amt fig" id="net-amt">£0</div>
+    <div class="hero-sub" id="net-delta"></div>
+    <div class="hero-split">
+      <div class="tile"><div class="tlab"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--in)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span>In · <span class="m-name"></span></span></div><div class="tval fig in" id="m-in">£0</div></div>
+      <div class="tile"><div class="tlab"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--out)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg><span>Out · <span class="m-name"></span></span></div><div class="tval fig out" id="m-out">£0</div></div>
+    </div>
+    <div class="hero-foot running" id="m-running">
+      <div class="hf-row"><span class="rline" id="m-running-line"></span><span class="rfig fig" id="m-running-fig">£0</span></div>
+      <div class="hf-bar"><i id="m-bar-in"></i><i id="m-bar-out"></i></div>
+      <div class="hf-days" id="m-days"></div>
+    </div>
+  </div>
+  <!-- v69: how much is left until payday -->
+  <button class="payday" id="payday" type="button" hidden></button>
+
+  <!-- v56: Home in order of what needs you. The check-in and anything that
+       needs sorting come first and vanish when done; the rest folds. Tap a
+       heading to fold it away - Ledger remembers. -->
+<button id="week-chip">
+  <span class="wc-left">
+    <span class="wc-ring" id="week-chip-ring"></span>
+    <span>
+      <span class="wc-title">Sunday check-in</span>
+      <span class="wc-sub" id="week-chip-sub"></span>
+    </span>
+  </span>
+  <span class="wc-go" id="week-chip-go">Start</span>
+</button>
+<div id="week-steps-inline"></div>
+
+  <div id="home-warn"></div>
+
+  <!-- v54: the two numbers that decide freedom -->
+  <div class="freedom" id="freedom"></div>
+
+  <!-- v69: savings pots (only shows once there is one) -->
+  <div id="pots-sec" hidden>
+    <div class="rule fold-h" data-foldh="pots" role="button" tabindex="0">Saving for <span class="fold-r"><b id="pots-total"></b><button class="rule-link" id="pots-add">Add</button><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+    <div class="fold-b" data-fold="pots"><div id="pots-list"></div></div>
+  </div>
+
+  <div class="rule fold-h" data-foldh="due" role="button" tabindex="0">Due soon <span class="fold-r"><b id="committed-total"></b><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+  <div class="fold-b" data-fold="due">
+    <div id="sub-findings"></div>
+    <div id="committed-block"></div>
+    <button id="due-x" type="button"></button>
+  </div>
+
+  <div class="rule fold-h" data-foldh="accts" role="button" tabindex="0">Accounts <span class="fold-r"><b id="liquid-total"></b><button class="rule-link" id="home-accts-edit">Edit</button><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+  <div class="fold-b" data-fold="accts">
+    <div id="acct-list"></div>
+  </div>
+
+  <div class="rule fold-h" data-foldh="recent" role="button" tabindex="0">Recent <span class="fold-r"><button class="rule-link" id="recent-all">See all</button><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+  <div class="fold-b" data-fold="recent">
+    <div class="card" id="recent-list"></div>
+  </div>
+
+  <div class="rule fold-h" data-foldh="history" role="button" tabindex="0">History <span class="fold-r"><b id="history-sum"></b><svg class="fold-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
+  <div class="fold-b" data-fold="history">
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- ================= SPENDING ================= -->
+<div id="view-spend" style="display:none;">
+  <div class="seg" id="month-seg">
+    <button id="m-prev"><i class="ti ti-chevron-left"></i></button>
+    <button id="m-label" class="on" style="flex:2;">This month</button>
+    <button id="m-next"><i class="ti ti-chevron-right"></i></button>
+  </div>
+
+  <div class="headline" style="padding-top:6px;">
+    <div class="lab">Spent</div>
+    <div class="amt fig" id="s-total">£0</div>
+    <div class="delta" id="s-compare"></div>
+    <div class="stackbar" id="s-stack"></div>
+  </div>
+
+  <!-- v56: this month against last, like for like -->
+  <div class="cmp" id="s-cmp" style="display:none;"></div>
+  <!-- v69: day by day -->
+  <div class="cal" id="s-cal" hidden></div>
+
+  <button class="uncat-btn" id="s-uncat" style="display:none;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+    <span class="uc-t" id="s-uncat-t"></span><span class="uc-go">Tag now</span>
+  </button>
+  <div class="rule">By category <button class="rule-link" id="spend-cats-edit">Edit</button></div>
+  <div id="cat-breakdown"></div>
+
+  <div class="rule">Transactions <b id="txn-count"></b></div>
+  <!-- Filtering by category and month answers "what did I spend on food in
+       July". It never answered "how much have I spent in Pret, ever", which
+       is the question you actually ask. Search ignores the month. -->
+  <div class="srch">
+    <i class="ti ti-search" aria-hidden="true"></i>
+    <input type="search" id="txn-search" placeholder="Search every month" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <button id="txn-search-x" aria-label="Clear search"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="srch-sum" id="txn-search-sum"></div>
+  <div class="chiprow" id="cat-filter"></div>
+  <div class="card" id="txn-list"></div>
+</div>
+
+<!-- ================= ASSETS ================= -->
+<div id="view-assets" style="display:none;">
+  <!-- Net worth leads the Assets tab, because "what am I worth" is the
+       question this tab exists to answer and the holdings are only how. -->
+  <div class="rule">Net worth</div>
+  <div class="card pad" id="nw-card">
+    <div class="lab" style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.14em; color:var(--text3);">Everything you own</div>
+    <div class="nw-fig fig" id="nw-amt">£0</div>
+    <div class="nw-sub" id="nw-incl"></div>
+    <div class="nw-sub" id="nw-sub"></div>
+    <div class="nw-chart" id="nw-chart"></div>
+    <div class="nw-months" id="nw-months"></div>
+    <div class="nw-horizon">
+      <div class="nw-track"><div class="nw-fill" id="nw-fill" style="width:0%"></div></div>
+      <div class="nw-hlab">
+        <span id="nw-pct"></span>
+        <button class="nw-target-btn" id="nw-target">£250,000</button>
+      </div>
+    </div>
+    <div id="nw-x" class="xt">Where this is heading</div>
+    <div class="nw-verdict" id="nw-verdict"></div>
+  </div>
+
+  <!-- v57: Crypto and Stocks, each with its own history page -->
+  <div class="rule">Investments <button class="rule-link" id="inv-add-link">Add</button></div>
+  <div id="inv-cards" class="inv-cards"></div>
+  <input type="file" id="inv-file" accept=".csv,text/csv" style="display:none;">
+
+  <div class="rule">Holdings value</div>
+  <div class="headline">
+    <div class="lab">Total value</div>
+    <div class="amt" id="a-value">£0</div>
+    <div class="delta" id="a-gain"></div>
+    <div class="a-break" id="a-break"></div>
+  </div>
+
+  <div class="split">
+    <div class="stat"><div class="lab">Put in</div><div class="val fig" id="a-invested">£0</div></div>
+    <div class="stat"><div class="lab">Real growth</div><div class="val fig" id="a-return">£0</div></div>
+  </div>
+
+  <div id="hold-wrap">
+  <div class="rule" id="hold-rule">Holdings</div>
+  <div id="asset-list"></div>
+  </div>
+  <button class="btn ghost" id="add-asset-btn">Add an asset</button>
+</div>
+
+<!-- ================= MORE ================= -->
+<div id="view-more" style="display:none;">
+  <!-- v55: Settings as six groups. Each opens its own sheet, so the page itself stays short. -->
+  <div class="set-list">
+    <button class="set-cat" data-set="week" style="--c:#d9b44a"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span class="sc-t"><b>Every week</b><small id="sc-week"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="set-cat" data-set="setup" style="--c:#8fd3ff"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span class="sc-t"><b>Set up</b><small id="sc-setup"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="set-cat" data-set="currency" style="--c:#7fe0b0"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="sc-t"><b>Currency</b><small id="sc-currency"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="set-cat" data-set="feel" style="--c:#c9a8f0"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17.5 9a4 4 0 0 1 0 6"/></svg></span><span class="sc-t"><b>Sound and feel</b><small id="sc-feel"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="set-cat" data-set="data" style="--c:#c3c8cf"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><span class="sc-t"><b>Your data</b><small id="sc-data"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="set-cat" data-set="fix" style="--c:#f0a77c"><span class="sc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span><span class="sc-t"><b>Fix things</b><small id="sc-fix"></small></span><svg class="sc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <p class="note set-foot">Ledger only tracks money and never touches your bank. It all lives on this phone, so back up weekly.</p>
+  <input type="file" id="restore-file" accept=".json" style="display:none;">
+  <!-- retired rows: kept, hidden, so nothing that refers to them breaks -->
+  <div hidden class="retired">
+    <div class="lrow tap" id="open-fix"><div><div class="d1">Fix things</div><div class="d2" id="fix-sub"></div></div></div>
+    <div class="lrow tap" id="do-undo" style="display:none;"><div><div class="d1">Undo last change</div><div class="d2" id="undo-sub"></div></div><div class="amtcol"><i class="ti ti-arrow-back-up" style="color:var(--brass)"></i></div></div>
+    <div class="lrow tap" id="open-rates"><div><div class="d1">Live rates</div><div class="d2" id="rates-sub">Not set up yet</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+  </div>
+</div>
+
+<div class="backdrop" id="set-week-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Every week</h2>
+  <p class="note" style="margin:4px 0 12px;">The Sunday jobs.</p>
+  <div class="card set-rows" data-closes="set-week-backdrop">
+    <div class="lrow tap" id="open-import"><div><div class="d1">Import from bank</div><div class="d2">Read a CSV statement</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-check"><div><div class="d1">Balance check</div><div class="d2" id="check-sub">Compare against your real balance</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-bulk"><div><div class="d1">Needs sorting</div><div class="d2" id="bulk-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="do-backup"><div><div class="d1">Back up</div><div class="d2" id="backup-sub">Save to Files, over last week's copy</div></div><div class="amtcol"><i class="ti ti-download" style="color:var(--text3)"></i></div></div>
+  </div>
+  <button class="btn ghost" data-close-sheet="set-week-backdrop">Done</button>
+</div></div>
+<div class="backdrop" id="set-setup-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Set up</h2>
+  <div style="height:12px"></div>
+  <div class="card set-rows" data-closes="set-setup-backdrop">
+    <div class="lrow tap" id="open-recurring"><div><div class="d1">Subscriptions and bills</div><div class="d2" id="recur-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-budgets"><div><div class="d1">Monthly budgets</div><div class="d2" id="budget-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-accounts"><div><div class="d1">Accounts</div><div class="d2" id="acct-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-rules"><div><div class="d1">Categories and rules</div><div class="d2" id="rule-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-pots"><div><div class="d1">Saving for</div><div class="d2" id="pots-sub">Nothing yet</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-targets"><div><div class="d1">Freedom targets</div><div class="d2" id="targets-sub">Keep 30% · 6 months runway</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+  </div>
+  <button class="btn ghost" data-close-sheet="set-setup-backdrop">Done</button>
+</div></div>
+<div class="backdrop" id="set-currency-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Currency</h2>
+  <p class="note" style="margin:4px 0 12px;">Other currencies convert by themselves when you import.</p>
+  <div class="card set-rows" data-closes="set-currency-backdrop">
+    <div class="lrow tap" id="open-currency"><div><div class="d1">Display currency</div><div class="d2" id="cur-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-secondary"><div><div class="d1">Second currency</div><div class="d2" id="sec-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+  </div>
+  <button class="btn ghost" data-close-sheet="set-currency-backdrop">Done</button>
+</div></div>
+<div class="backdrop" id="set-feel-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Sound and feel</h2>
+  <div style="height:12px"></div>
+  <div class="card set-rows" data-closes="set-feel-backdrop">
+
+    <div class="lrow"><div><div class="d1">Tap sound</div><div class="d2">A soft wood click when you tap something</div></div>
+      <div class="amtcol"><button id="sound-toggle" class="chip"></button></div></div>
+    <div class="lrow"><div><div class="d1">Moment sounds</div><div class="d2">Coins, the book closing, the typewriter and the rest</div></div>
+      <div class="amtcol"><button id="fx-toggle" class="chip"></button></div></div>
+    <div class="lrow"><div><div class="d1">Buzz on save</div><div class="d2">Only when something is actually written</div></div>
+      <div class="amtcol"><button id="haptic-toggle" class="chip"></button></div></div>
+  
+  </div>
+  <button class="btn ghost" data-close-sheet="set-feel-backdrop">Done</button>
+</div></div>
+<div class="backdrop" id="set-data-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Your data</h2>
+  <div style="height:12px"></div>
+  <div class="card set-rows" data-closes="set-data-backdrop">
+    <div class="lrow tap" id="do-restore"><div><div class="d1">Restore</div><div class="d2">Load a backup file</div></div><div class="amtcol"><i class="ti ti-upload" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="do-cloud-putback"><div><div class="d1">Cloud backup</div><div class="d2" id="cloud-sub">Every day</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <p class="note" id="backup-note" style="margin:8px 2px 2px;"></p>
+    <div class="lrow tap" id="open-export"><div><div class="d1">Export</div><div class="d2">A CSV of everything, or totals by week or month</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+  </div>
+  <div class="card" style="margin-top:12px;">
+    <div class="lrow"><div><div class="d1">Sync with Muse</div><div class="d2" id="sync-state">Off</div></div>
+      <div class="amtcol"><button id="t-sync" class="chip" role="switch" aria-checked="false" aria-label="Sync with Muse">Off</button></div></div>
+    <div id="sync-setup" style="display:none; padding:0 16px 16px;">
+      <p class="note" style="margin:8px 0;">Lets Muse add and fix transactions and budgets. Syncs to your private repo only. Settings and COACH data never sync.</p>
+      <input class="field" type="password" id="sync-token" placeholder="Paste your GitHub token here" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%; margin:4px 0 10px;">
+      <p class="note" style="margin:0 0 10px;">A GitHub token for the private ledger-sync repo only. It stays on this phone and is never backed up.</p>
+      <div style="display:flex; gap:8px;">
+        <button class="btn soft" id="sync-now" style="flex:1;">Sync now</button>
+        <button class="btn soft" id="sync-forget" style="flex:1;">Remove token</button>
+      </div>
+      <p class="note" id="sync-conflicts" style="margin:10px 0 0; display:none;"></p>
+    </div>
+  </div>
+  <button class="btn ghost" data-close-sheet="set-data-backdrop">Done</button>
+</div></div>
+<div class="backdrop" id="targets-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Freedom targets</h2>
+  <p class="note" style="margin:4px 0 14px;">What "on target" means on the Home card.</p>
+  <div class="ci-card"><div class="tg-t">Keep each month</div><div class="tg-opts" id="tg-keep"></div><div class="note" id="tg-keep-n" style="margin-top:10px;"></div></div>
+  <div class="ci-card"><div class="tg-t">Runway</div><div class="tg-opts" id="tg-run"></div><div class="note" id="tg-run-n" style="margin-top:10px;"></div></div>
+  <button class="btn ghost" id="targets-close">Done</button>
+</div></div>
+<!-- ============ v54: Fix things ============ -->
+<div class="backdrop" id="fix-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Fix things</h2>
+  <p class="note" style="margin:4px 0 12px;">Tools for when something looks wrong. You won't need these most weeks.</p>
+  <div class="card" id="fix-list">
+    <div class="lrow tap" id="open-dupes"><div><div class="d1">Find duplicates</div><div class="d2" id="dupe-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-fxfix"><div><div class="d1">Currency history</div><div class="d2" id="fxfix-sub"></div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="open-fximport"><div><div class="d1">Fix an import's currency</div><div class="d2" id="fximport-sub">Convert transactions that came in as the wrong money</div></div><div class="amtcol"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>
+          </div>
+  <button class="btn ghost" id="fix-close">Done</button>
+</div></div>
+<!-- v56: look inside a backup before it replaces anything -->
+<div class="backdrop" id="restore-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Restore this backup?</h2>
+  <div id="restore-body" style="margin-top:12px;"></div>
+  <button class="btn" id="restore-go" style="margin-top:14px;">Replace with this backup</button>
+  <button class="btn ghost" id="restore-cancel">Cancel</button>
+</div></div>
+<!-- v69: a savings pot -->
+<div class="backdrop" id="pot-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="pot-title">Something to save for</h2>
+  <span class="lab">What for</span><input type="text" id="pot-name" placeholder="e.g. Trip fund" autocomplete="off">
+  <div class="row2">
+    <div><span class="lab">Target (£)</span><input type="number" id="pot-target" inputmode="decimal" step="1" min="0"></div>
+    <div><span class="lab">By (optional)</span><input type="date" id="pot-date"></div>
+  </div>
+  <span class="lab">Kept in its own account?</span><select id="pot-acct"></select>
+  <div id="pot-saved-wrap"><span class="lab">Saved so far (£)</span><input type="number" id="pot-saved" inputmode="decimal" step="0.01" min="0"></div>
+  <button class="btn" id="pot-save" style="margin-top:14px;">Save</button>
+  <button class="btn ghost" id="pot-del" style="color:var(--out);">Delete</button>
+  <button class="btn ghost" id="pot-cancel">Cancel</button>
+</div></div>
+<!-- v69: put back a daily cloud backup -->
+<div class="backdrop" id="cloud-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Put back from cloud</h2>
+  <p class="note" style="margin:4px 0 12px;">Saved every day to your private GitHub. Pick a day.</p>
+  <div id="cloud-body"></div>
+  <button class="btn ghost" id="cloud-close" style="margin-top:12px;">Close</button>
+</div></div>
+<div class="backdrop" id="exportpick-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Export</h2>
+  <div class="card" id="exportpick-list" style="margin-top:12px;">
+    <div class="lrow tap" id="do-csv"><div><div class="d1">Export transactions</div><div class="d2">Every transaction, as a CSV</div></div><div class="amtcol"><i class="ti ti-table-export" style="color:var(--text3)"></i></div></div>
+    <div class="lrow tap" id="do-periods"><div><div class="d1">Export by week or month</div><div class="d2">Totals and spending by category, period by period</div></div><div class="amtcol"><i class="ti ti-table-export" style="color:var(--text3)"></i></div></div>
+  </div>
+  <button class="btn ghost" id="exportpick-close">Done</button>
+</div></div>
+
+<!-- ============ v52: sort uncategorised, one tap per row ============ -->
+<div class="backdrop" id="sort-backdrop"><div class="sheet sort-sheet">
+  <div class="grab"></div>
+  <div class="sort-head">
+    <div><h2 style="margin:0;">Needs sorting</h2><div class="note" id="sort-left"></div></div>
+    <button class="sort-x" id="sort-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="sort-bar"><i id="sort-bar"></i></div>
+  <p class="note" style="margin:10px 0 12px;">Tap a category to file it. Ledger remembers the shop. Other and Transfers need a note.</p>
+  <div id="sort-list"></div>
+</div></div>
+
+<!-- ============ v52: the Sunday check-in, one guided flow ============ -->
+<!-- v57: an investment category, or one coin inside it -->
+<div class="ci inv" id="inv" role="dialog" aria-modal="true" aria-labelledby="inv-title" hidden>
+  <div class="ci-top">
+    <button class="inv-backbtn" id="inv-back" aria-label="Back"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+    <div class="ci-t"><div class="ci-name" id="inv-title">Crypto</div></div>
+    <button class="inv-editbtn" id="inv-edit">Edit</button>
+  </div>
+  <div class="ci-body" id="inv-body"></div>
+</div>
+<div class="ci" id="ci" role="dialog" aria-modal="true" aria-labelledby="ci-title" hidden>
+  <div class="ci-top">
+    <button class="ci-x" id="ci-close" aria-label="Close check-in (your place is saved)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="ci-t"><div class="ci-name">Sunday check-in</div><div class="ci-step" id="ci-step"></div></div>
+    <div style="width:44px;"></div>
+  </div>
+  <div class="ci-prog" id="ci-prog"></div>
+  <div class="ci-body" id="ci-body"></div>
+  <div class="ci-foot" id="ci-foot">
+    <button class="btn" id="ci-main"></button>
+    <button class="ci-skip" id="ci-skip"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <div class="toast-t" id="toast-t"></div>
+  <button class="toast-undo" id="toast-undo">Undo</button>
+</div>
+
+<!-- v50: the two things you actually do, always one tap away. Import used to
+     live three taps deep under More, for the job done every Sunday. -->
+<div class="actbar" id="actbar">
+  <button class="act-main" id="fab"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add</button>
+  <button class="act-sec" id="act-import"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Import</button>
+</div>
+
+<!-- ============ SHEET: import results (v50) ============ -->
+<div class="backdrop" id="impdone-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Statement added</h2>
+  <div class="note" id="impdone-sub" style="margin:2px 0 14px;"></div>
+  <div id="impdone-body"></div>
+  <button class="btn" id="impdone-tag">Tag now</button>
+  <button class="btn ghost" id="impdone-ok">Done</button>
+  <p class="note" style="text-align:center; margin:10px 0 0;">You can undo this from Settings.</p>
+</div></div>
+<!-- ============ SHEET: duplicates ============ -->
+<div class="backdrop" id="cat-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+    <h2 id="catd-name" style="margin:0;">Category</h2>
+    <span class="fig" id="catd-total" style="font-size:18px;"></span>
+  </div>
+  <div class="note" id="catd-sub" style="margin:2px 0 10px;"></div>
+  <div class="weekstrip" id="catd-months"></div>
+  <div id="catd-list"></div>
+  <div class="note" id="catd-foot" style="margin-top:12px;"></div>
+</div></div>
+
+<div class="backdrop" id="dupe-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Duplicate transactions</h2>
+  <p class="note" style="margin:6px 0 14px;">Ledger keeps the copy with the most detail and removes the rest. You can undo it.</p>
+  <div id="dupe-list"></div>
+  <button class="btn" id="dupe-all" style="display:none;">Remove every duplicate</button>
+  <button class="btn ghost" id="dupe-close">Done</button>
+</div></div>
+
+<!-- ============ SHEET: bulk tagging ============ -->
+<div class="backdrop" id="bulk-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Tag uncategorised</h2>
+  <p class="note" style="margin:6px 0 14px;">Pick a category once per shop and Ledger remembers it.</p>
+  <div id="bulk-list"></div>
+  <button class="btn ghost" id="bulk-close">Done</button>
+</div></div>
+
+<!-- ============ SHEET: currency repair ============ -->
+<div class="backdrop" id="fxfix-backdrop"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Currency history</h2>
+  <p class="note" style="margin:6px 0 14px;">Every currency conversion, newest first. Each one can be reversed exactly.</p>
+  <div id="fxfix-list"></div>
+  <button class="btn ghost" id="fxfix-all" style="display:none;">Reverse every conversion</button>
+  <button class="btn ghost" id="fxfix-close">Done</button>
+</div></div>
+
+<style>

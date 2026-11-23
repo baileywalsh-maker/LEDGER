@@ -31,7 +31,7 @@ const csvBad = files.filter(f => /\.csv$/i.test(f)).filter(f => {
   return rows.slice(1).some(r => { const c = r.split(','); return cols.some(i => (c[i]||'').replace(/"/g,'').trim() && (c[i]||'').replace(/"/g,'').trim() !== 'Test Person'); });
 });
 ok(!csvBad.length, 'test CSVs only name "Test Person"' + (csvBad.length ? ' (check ' + csvBad.join(', ') + ')' : ''));
-ok(!hits(/Test Person/i).length, 'his full name is not in any file');
+ok(!hits(new RegExp(['bai','ley'].join('') + '\\s+' + ['wal','sh'].join(''), 'i')).length, 'his full name is not in any file');
 
 console.log(fails ? '\n' + fails + ' problem(s): do NOT push.' : '\nSafe to push.');
 process.exit(fails ? 1 : 0);

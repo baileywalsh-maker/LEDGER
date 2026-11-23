@@ -231,3 +231,25 @@ Current version is **v56**. Everything above still holds; this is what changed.
   "Show N more". Assets: investment cards two per row; "Where this is heading" opens the outlook.
 - All styles are in one `<style id="compact">` block before `</head>`.
 - Tests: new `compacttest.js` (19 checks). Full run: 183 browser checks + 34 sync + 8 privacy.
+
+## v69 (23 Nov 2026)
+
+- **Daily cloud backup** (`js/32b-cloud-backup.js`). First open each day, when sync is on, the
+  same file as "Back up" is saved to `backups/ledger-backup.json` in the private LEDGER-sync
+  repo (compact JSON). Git history keeps every day. Counts as backed up only once GitHub
+  confirms (sets `ledger:lastbackupday`, `settings.lastBackup`, `ledger:cloudday`). Settings →
+  Your data → Cloud backup lists one row per day (commits API) and opens the usual restore
+  preview (`openRestoreText`). Uses the sync token; never in the file.
+- **Payday countdown** (Home, under net position). From Income-category pay seen 3+ times in
+  120 days on a steady rhythm (7/14/28 days or monthly). Current + cash accounts, minus bills
+  due before payday, over the days left. Tap for details. Hidden if there's no steady pay.
+- **Spending calendar** ("Day by day" on Spending). Days shaded by spending (same rules as
+  every total). Tap a day to filter transactions to it (`dayFilter`); month change clears it.
+  Tap the title to fold it.
+- **Savings pots** ("Saving for" on Home once one exists; add in Settings → Set up). Name,
+  target, optional date, either an account (its balance) or an amount you enter.
+  `ledger:pots`, in backups and undo. **Not synced with Muse yet.**
+- Less fine print: long notes in Sync, Sort, Currency, Bills, Balance check and investments cut.
+- Source split back in the repo (`_source/src`, `build.js`, `split.py`). History cleaned.
+- Tests: `featuretest.js` (24), `cloudtest.js` (20); privacytest rule repaired after the
+  history rewrite; synctest's fake GitHub now tells the backup file apart.

@@ -38,6 +38,7 @@ const seed = fs.readFileSync(path.join(__dirname, 'seed.js'),'utf8');
   r.moreBtn = await pg.evaluate(()=>document.getElementById('txn-more')?.textContent);
   await pg.evaluate(()=>document.getElementById('txn-more').click()); await pg.waitForTimeout(500);
   r.txAll = await pg.evaluate(()=>document.querySelectorAll('#txn-list .lrow:not(#txn-more)').length);
+  r.txWant = await pg.evaluate(()=>txnsInMonth(spendMonth).length);
   await pg.evaluate(()=>document.querySelector('[data-view=assets]').click()); await pg.waitForTimeout(1200);
   r.nwHidden = !(await vis('#nw-verdict'));
   await pg.click('#nw-x'); await pg.waitForTimeout(300); r.nwOpens = await vis('#nw-verdict');
@@ -49,7 +50,7 @@ const seed = fs.readFileSync(path.join(__dirname, 'seed.js'),'utf8');
     freeLineHidden:'Freedom: extra line tucked away', freeOpens:'Tapping Freedom opens it', recentRows:'Recent shows 3 rows', sideBySide:'Check-in and sorting sit side by side',
     movesHidden:'Spending: biggest changes tucked away', movesOpen:'Tapping the month comparison opens biggest changes', txRows:'Spending shows 8 transactions first',
     txAll:'Show more brings every transaction back', nwHidden:'Net worth outlook tucked away', nwOpens:'Tapping it opens the outlook', rememberedAfterReopen:'Open/closed is remembered after reopening'};
-  const okv = {recentRows:3, txRows:8, txAll:24, bothSlides:2};
+  const okv = {recentRows:3, txRows:8, txAll:r.txWant, bothSlides:2};
   for(const k in want){ const pass = (k in okv) ? r[k] === okv[k] : r[k] === true; console.log((pass ? 'PASS ' : 'FAIL ') + want[k] + (pass ? '' : ' (' + r[k] + ')')); }
   console.log((r.bothSlides === 2 ? 'PASS ' : 'FAIL ') + 'Freedom keeps both views (bars and gauges)');
   console.log((/to check/.test(r.dueBtn) ? 'PASS ' : 'FAIL ') + 'A Due soon notice is flagged on the button while tucked away');

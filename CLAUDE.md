@@ -26,6 +26,15 @@ Read this first in any chat about Ledger. The full handover is imported below.
    names, employers, places or money figures. Test data must be made up ("Test Person").
    `node _source/tests/privacytest.js` must say "Safe to push" before every push.
 
+## Editing the app (source split, v69)
+- **Edit `_source/src/`, never `index.html` directly.** Parts are listed in order in
+  `_source/src/parts.txt` (html/, css/, js/). Then `node _source/build.js` writes `index.html`
+  (it refuses if the script has an error).
+- **First, every time:** `node _source/build.js --check`. If it says index.html does NOT match
+  src/, someone (Muse) edited `index.html` directly: run `python3 _source/split.py index.html
+  _source/src`, rename `_source/src/order.txt` to `parts.txt`, and keep those changes.
+- New parts in v69: `js/32b-cloud-backup.js`, `js/37b-payday-calendar-pots.js`.
+
 ## Running the tests
 - Layout the browser tests expect (outside the repo): `app/` = this build, `app-previous/` =
   the live build before your change, `shots/`, and a copy of `_source/tests/` as `tests/`.
@@ -34,7 +43,9 @@ Read this first in any chat about Ledger. The full handover is imported below.
   saved data is identical before/after the update.
 - `synctest.js` runs from inside the repo (it loads the repo's `index.html`).
 - `privacytest.js` runs from anywhere.
-- Also `compacttest.js` (v68). v68 baseline: 183 browser checks + 34 sync + 8 privacy, all passing.
+- Also `compacttest.js` (v68) and `featuretest.js` (v69) in the same layout. `cloudtest.js` runs
+  from inside the repo like synctest.
+- v69 baseline: 173 browser checks + 34 sync + 20 cloud backup + 8 privacy, all passing.
 
 ## Keep Muse in step
 - Muse reads `MUSE.md` in the private `LEDGER-sync` repo (what the file holds, how Ledger
@@ -46,12 +57,10 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v68** (compact look). The handover covers everything up to v68 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
+- **Live version is v69** (cloud backup, payday, calendar, pots). The handover covers everything up to v69 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
 - The handover's old "non-negotiable rules" mention zips and Netlify. The setup above replaces them.
-- Commits before v67 (Nov 2026) still have his name and an employer in old test files. Only a history rewrite (force push) would remove them, and that needs Bailey's OK.
-- **The split source (`ledger_source_v56.zip`, `src/` + `build.js`) is not in
-  this repo.** Until it's found, `index.html` here is the only copy of the app.
-  Edit it carefully, or rebuild the source from it.
+- History was rewritten on 23 Nov 2026 (Bailey's OK) to remove his name, employer and town from
+  old commits. Commit ids before that date changed.
 - "Sound board 2" mentioned below was deleted in the Nov 2026 clean-up.
 
 ## Mockups and demos: one page per app

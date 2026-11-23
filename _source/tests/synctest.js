@@ -52,6 +52,13 @@ async function openSync(browser, { syncOn = true, remote = null } = {}) {
     const u = new URL(r.request().url());
     if (u.hostname === 'api.github.com') {
       if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type, accept' }, body: '' });
+      // v69: the daily cloud backup writes backups/ledger-backup.json in the same
+      // repo. That file is not the sync file: answer it separately.
+      if (!u.pathname.endsWith('/ledger-sync.json')) {
+        gh.other = (gh.other || 0) + 1;
+        if (r.request().method() === 'PUT') return r.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*' }, contentType: 'application/json', body: '{"content":{"sha":"bk-1"}}' });
+        return r.fulfill({ status: 404, headers: { 'access-control-allow-origin': '*' }, contentType: 'application/json', body: '{"message":"Not Found"}' });
+      }
       if (gh.failAuth) return r.fulfill({ status: 401, headers: { 'access-control-allow-origin': '*' }, contentType: 'application/json', body: '{"message":"Bad credentials"}' });
       if (r.request().method() === 'GET') {
         if (!gh.pack) return r.fulfill({ status: 404, headers: { 'access-control-allow-origin': '*' }, contentType: 'application/json', body: '{"message":"Not Found"}' });
