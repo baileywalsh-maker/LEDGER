@@ -276,3 +276,14 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - MUSE.md gained "What's changed in Ledger" (one line per version since v61) and how to edit
   pots. Phone-only on purpose: token, settings, look/sound switches, caches, undo.
 - Tests: synctest.js 39 (+5 pots). Full: 178 browser + 39 sync + 20 cloud + 8 privacy.
+
+## v72 (24 Nov 2026): pull down to refresh
+
+- Pull down from the top of any tab (`js/37c-pull-refresh.js`). Ignored when scrolled down, a
+  sheet or the check-in is open, or the swipe is sideways. Damped 0.5x, triggers at 70px.
+- It fetches `sw.js` fresh and compares with `APP_VERSION`. Newer: updates the service worker
+  and reloads (loading screen shows; data stays in localStorage). Reloads at most once per
+  version per session (`sessionStorage` 'ledger-ptr-tried'), so a missed APP_VERSION bump can't loop.
+- Same version: Sync with Muse (if on), crypto prices, currency rate, redraw, toast
+  ("Up to date · synced" / "· N new from Muse"). Offline: says it's showing what's on the phone.
+- No data change. Tests: `pulltest.js` (16). Full: 194 browser + 39 sync + 20 cloud + 8 privacy.

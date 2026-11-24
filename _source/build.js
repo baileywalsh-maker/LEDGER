@@ -21,6 +21,8 @@ if (process.argv.includes('--check')) {
 const scripts = [...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 try { scripts.forEach(s => new vm.Script(s)); }
 catch (e) { console.error('BUILD REFUSED: the script has an error:\n' + e.message); process.exit(1); }
-fs.writeFileSync(out, html);
 const ver = (fs.readFileSync(path.join(root, 'sw.js'), 'utf8').match(/ledger-v(\d+)/) || [])[1];
+const appVer = (html.match(/const APP_VERSION = (\d+);/) || [])[1];
+if (appVer !== ver) { console.error('BUILD REFUSED: APP_VERSION (' + appVer + ') in js/37c-pull-refresh.js must match sw.js (v' + ver + ').'); process.exit(1); }
+fs.writeFileSync(out, html);
 console.log('Built index.html (v' + ver + ', ' + html.split('\n').length + ' lines, ' + parts.length + ' parts)');

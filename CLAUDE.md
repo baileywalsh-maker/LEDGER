@@ -34,7 +34,8 @@ Read this first in any chat about Ledger. The full handover is imported below.
   src/, someone (Muse) edited `index.html` directly: run `python3 _source/split.py index.html
   _source/src`, rename `_source/src/order.txt` to `parts.txt`, and keep those changes.
 - Parts added since the split: `js/12b-real-sounds.js` (v70), `js/32b-cloud-backup.js`,
-  `js/37b-payday-calendar-pots.js` (v69).
+  `js/37b-payday-calendar-pots.js` (v69), `js/37c-pull-refresh.js` (v72: holds `APP_VERSION`,
+  which must match `sw.js` or build.js refuses).
 
 ## Running the tests
 - Layout the browser tests expect (outside the repo): `app/` = this build, `app-previous/` =
@@ -46,7 +47,8 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - `privacytest.js` runs from anywhere.
 - Also `compacttest.js` (v68) and `featuretest.js` (v69) in the same layout. `cloudtest.js` runs
   from inside the repo like synctest.
-- v71 baseline: 178 browser checks + 39 sync + 20 cloud backup + 8 privacy, all passing.
+- `pulltest.js` (v72) in the browser layout.
+- v72 baseline: 194 browser checks (incl. 16 pull) + 39 sync + 20 cloud backup + 8 privacy, all passing.
 
 ## Keep Muse in step (APPS project rule: every change is expressed in the sync repo)
 - **Every change to the app must show up in the private `LEDGER-sync` repo so Muse connects
@@ -63,7 +65,7 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v71** (pots sync with Muse). The handover covers everything up to v71 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
+- **Live version is v72** (pull down to refresh). The handover covers everything up to v72 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
 - The handover's old "non-negotiable rules" mention zips and Netlify. The setup above replaces them.
 - History was rewritten on 23 Nov 2026 (Bailey's OK) to remove his name, employer and town from
   old commits. Commit ids before that date changed.

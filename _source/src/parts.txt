@@ -34,5 +34,6 @@ js/35-investments-v57-preview-crypto-a.js
 js/36-v58-add-and-edit-everywhere-inve.js
 js/37-v59-edit-what-you-hold-one-place.js
 js/37b-payday-calendar-pots.js
+js/37c-pull-refresh.js
 js/38-wiring.js
 html/99-end.html
