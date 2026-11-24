@@ -153,10 +153,12 @@ renderSpend = function(){
 // ---- Savings pots ----
 // Something you're saving for: a name, a target, an optional date, and either an
 // account it lives in (its balance is the progress) or an amount you update.
-// Stored in ledger:pots, carried in backups and undo. Not synced with Muse yet.
+// Stored in ledger:pots, carried in backups and undo, and synced with Muse (v71).
 const K_POTS = 'ledger:pots';
 let pots = (()=>{ try{ const v = JSON.parse(localStorage.getItem(K_POTS)); return Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : []; }catch(e){ return []; } })();
 function savePots(){ save(K_POTS, pots); }
+// v71: sync hands pots over here (Muse can add or change them).
+window.syncSetPots = v => { pots = Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : pots; };
 function potHave(p){
   if(p.acct && accts.some(a=>a.id === p.acct)) return Math.max(0, acctBalance(p.acct));
   return Math.max(0, Number(p.saved) || 0);

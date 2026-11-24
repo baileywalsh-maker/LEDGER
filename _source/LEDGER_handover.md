@@ -267,3 +267,12 @@ Current version is **v56**. Everything above still holds; this is what changed.
 - Tests: featuretest.js +5 sound checks (29). Full run: 178 browser + 34 sync + 20 cloud + 8 privacy.
 - Packs on GitHub if more are ever wanted: Calinou/kenney-interface-sounds, Calinou/kenney-ui-audio,
   Boyquotes/kenney-rpg-audio-for-godot, Boyquotes/kenney-impact-sounds-for-godot.
+
+## v71 (24 Nov 2026): everything reaches Muse
+
+- New APPS project rule: every change to an app is expressed in its sync repo. Savings pots
+  were the one gap: now in `ledger-sync.json` (`pots`), merged by id; a file without `pots`
+  never deletes them. `window.syncSetPots` hands merged pots to the pots code.
+- MUSE.md gained "What's changed in Ledger" (one line per version since v61) and how to edit
+  pots. Phone-only on purpose: token, settings, look/sound switches, caches, undo.
+- Tests: synctest.js 39 (+5 pots). Full: 178 browser + 39 sync + 20 cloud + 8 privacy.

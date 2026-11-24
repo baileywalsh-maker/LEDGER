@@ -155,6 +155,19 @@ async function openSync(browser, { syncOn = true, remote = null } = {}) {
   ok(!gh.pack.txns.some(x => x.id === 't1'), 'A transaction deleted on the phone is gone from the repo too');
   ok(gh.pack.txns.some(x => x.id === 'm1'), 'Deleting one transaction does not take the others with it');
 
+  // 4b. (v71) Savings pots sync both ways, and a file with no pots list never wipes them.
+  await o.q(() => { pots.push({ id: 'potP', name: 'Trip fund', target: 3000, saved: 400, acct: null, date: null }); savePots(); render(); });
+  await o.q(() => window.__ledgerSync.now({ manual: true })); await o.page.waitForTimeout(600);
+  ok(Array.isArray(gh.pack.pots) && gh.pack.pots.some(p => p.id === 'potP'), 'A pot added on the phone is in the synced file');
+  gh.pack = Object.assign({}, gh.pack, { version: (gh.pack.version || 1) + 1, updatedBy: 'muse', pots: gh.pack.pots.concat([{ id: 'potM', name: 'New laptop', target: 1200, saved: 100, acct: null, date: null }]) }); gh.sha = 'sha-muse-1';
+  await o.q(() => window.__ledgerSync.now({ manual: true })); await o.page.waitForTimeout(600);
+  ok(await o.q(() => pots.some(p => p.id === 'potM') && JSON.parse(localStorage.getItem('ledger:pots')).some(p => p.id === 'potM')), 'A pot Muse adds appears in Ledger');
+  ok(await o.q(() => pots.some(p => p.id === 'potP')), 'The phone\u2019s own pot is still there after the merge');
+  gh.pack = Object.assign({}, gh.pack, { version: (gh.pack.version || 1) + 1 }); delete gh.pack.pots; gh.sha = 'sha-old-file';
+  await o.q(() => window.__ledgerSync.now({ manual: true })); await o.page.waitForTimeout(600);
+  ok(await o.q(() => pots.length === 2), 'A file with no pots list (older app) does not delete any pots');
+  ok(Array.isArray(gh.pack.pots) && gh.pack.pots.length === 2, 'and the next push puts them back in the file');
+
   // 5. Merge rules, as pure function checks (no network).
   const merged = await o.q(() => {
     const loc = { __ledgerSync: 1, version: 2, txns: [{ id: 'x1', desc: 'One edited here', amount: 5, upd: 500 }, { id: 'x2', desc: 'Two', amount: 6 }], budgets: { groceries: 450 }, cats: [], rules: [], accts: [], assets: [], recur: [], invest: { trades: [], cats: [], byValue: {} }, impmap: null };

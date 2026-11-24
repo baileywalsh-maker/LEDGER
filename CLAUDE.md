@@ -46,9 +46,14 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - `privacytest.js` runs from anywhere.
 - Also `compacttest.js` (v68) and `featuretest.js` (v69) in the same layout. `cloudtest.js` runs
   from inside the repo like synctest.
-- v70 baseline: 178 browser checks + 34 sync + 20 cloud backup + 8 privacy, all passing.
+- v71 baseline: 178 browser checks + 39 sync + 20 cloud backup + 8 privacy, all passing.
 
-## Keep Muse in step
+## Keep Muse in step (APPS project rule: every change is expressed in the sync repo)
+- **Every change to the app must show up in the private `LEDGER-sync` repo so Muse connects
+  fully.** Data the app keeps goes in `ledger-sync.json` (sync code in `js/10-start.js`, merge
+  by id, tests in synctest.js). What changed and how it works goes in `MUSE.md`'s "What's
+  changed in Ledger" list, one line per version, same push. Phone-only on purpose (say so in
+  MUSE.md): the token, settings, look/sound switches, caches, undo steps.
 - Muse reads `MUSE.md` in the private `LEDGER-sync` repo (what the file holds, how Ledger
   counts money, how to edit it, and how Muse should mark its own app changes).
 - Any change to the synced data (a new field, category, account type or investment entry kind)
@@ -58,7 +63,7 @@ Read this first in any chat about Ledger. The full handover is imported below.
 - Only ever touch `MUSE.md` there: `ledger-sync.json` belongs to the phone and Muse.
 
 ## Gaps to know about (Nov 2026)
-- **Live version is v70** (real sounds). The handover covers everything up to v70 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
+- **Live version is v71** (pots sync with Muse). The handover covers everything up to v71 (v65 was the move to GitHub Pages; v66 added Sync with Muse, see `_source/SYNC.md`).
 - The handover's old "non-negotiable rules" mention zips and Netlify. The setup above replaces them.
 - History was rewritten on 23 Nov 2026 (Bailey's OK) to remove his name, employer and town from
   old commits. Commit ids before that date changed.

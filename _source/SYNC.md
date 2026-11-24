@@ -39,6 +39,8 @@ touching sync.
                "contribs": [], "values": [{ "date": "2026-11-17", "value": 5900 }] } ],
   "recur": [ { "id": "r1", "name": "Spotify", "amount": 11.99, "cadence": "monthly",
               "nextDue": "2026-12-19", "acct": "wgbp", "cat": "subs" } ],
+  "pots": [ { "id": "pot1", "name": "Trip fund", "target": 3000, "date": "2027-03-01",
+             "acct": null, "saved": 400, "created": "2026-11-23" } ],
   "invest": { "trades": [ { "id": "...", "ext": "cb:1", "src": "coinbase", "cat": "crypto",
                            "date": "2026-11-09", "ts": "2026-11-09 12:00:00", "sym": "BTC",
                            "kind": "buy", "qty": 0.01, "gbp": 500 } ],
@@ -175,3 +177,10 @@ bad token fails cleanly, token never in backup or in the synced file, price
 cache never syncs, `upd` stamping. Full regression: `node functest.js`
 (stored data identical to the previous build after opening), `citest.js`,
 `settingstest.js` in the same folder.
+
+## v71: savings pots sync
+
+`pots` is merged by id like accounts and bills (changed on both sides keeps the phone's copy,
+listed in Settings). `acct` set = the pot follows that account's balance and `saved` is ignored;
+`acct: null` = `saved` is the amount so far. A file with **no** `pots` key (written before v71)
+never deletes the phone's pots; the next push adds them back. Tests: synctest.js step 4b.

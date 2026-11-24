@@ -2315,7 +2315,7 @@ function syncInvestPack(inv){
   };
 }
 function syncSnapOf(pack){
-  const snap = {txns:{}, budgets:{}, cats:{}, rules:'', accts:{}, assets:{}, recur:{},
+  const snap = {txns:{}, budgets:{}, cats:{}, rules:'', accts:{}, assets:{}, recur:{}, pots:{},
     invest:{trades:{}, cats:{}, byValue:{}}, impmap:''};
   const byId = (list, into)=>{ (list || []).forEach(n=>{ if(n && n.id) into[n.id] = syncItemHash(n); }); };
   // Maps are snapshotted per key, so the merge can tell which side changed
@@ -2326,6 +2326,7 @@ function syncSnapOf(pack){
   byId(pack.accts, snap.accts);
   byId(pack.assets, snap.assets);
   byId(pack.recur, snap.recur);
+  byId(pack.pots, snap.pots);
   byId(pack.invest && pack.invest.trades, snap.invest.trades);
   byId(pack.invest && pack.invest.cats, snap.invest.cats);
   byKey(pack.budgets, snap.budgets);
@@ -2344,9 +2345,16 @@ function syncPackLocal(){
     schema: (typeof SCHEMA !== 'undefined' ? SCHEMA : 1),
     txns: txns, budgets: budgets, cats: cats, rules: rules,
     accts: accts, assets: assets, recur: recur,
+    pots: syncPotsLocal(),
     invest: syncInvestPack(typeof invest !== 'undefined' ? invest : null),
     impmap: impmap
   };
+}
+// v71: savings pots sync too. Read straight from storage: the pots code is
+// further down the file, and the sync code must not depend on it having run.
+function syncPotsLocal(){
+  try{ const v = JSON.parse(localStorage.getItem('ledger:pots')); return Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : []; }
+  catch(e){ return []; }
 }
 // Every transaction / trade change is stamped with when it changed, so an
 // entry edited on both sides can keep the newer copy. Stamping happens
@@ -2463,7 +2471,7 @@ function syncMergeRules(local, remote, snapHash){
 // Three-way merge: local (this phone) vs remote (the private repo),
 // against the snapshot from the last good sync. Returns {pack, conflicts}.
 function syncMerge(local, remote, snap){
-  snap = snap || {txns:{}, budgets:{}, cats:{}, rules:'', accts:{}, assets:{}, recur:{},
+  snap = snap || {txns:{}, budgets:{}, cats:{}, rules:'', accts:{}, assets:{}, recur:{}, pots:{},
     invest:{trades:{}, cats:{}, byValue:{}}, impmap:''};
   const conflicts = [];
   const mTxns = syncMergeList(local.txns, remote.txns, snap.txns, true, 'transaction');
@@ -2471,13 +2479,18 @@ function syncMerge(local, remote, snap){
   const mAccts = syncMergeList(local.accts, remote.accts, snap.accts, false, 'account');
   const mAssets = syncMergeList(local.assets, remote.assets, snap.assets, false, 'asset');
   const mRecur = syncMergeList(local.recur, remote.recur, snap.recur, false, 'subscription');
+  // A file with no pots list at all (written before v71) means "doesn't know
+  // about pots", never "every pot was deleted": keep this phone's.
+  const mPots = Array.isArray(remote.pots)
+    ? syncMergeList(local.pots, remote.pots, snap.pots || {}, false, 'savings pot')
+    : {list: Array.isArray(local.pots) ? local.pots : [], conflicts: []};
   const mTrades = syncMergeList(local.invest && local.invest.trades, remote.invest && remote.invest.trades, snap.invest && snap.invest.trades, true, 'investment entry');
   const mInvCats = syncMergeList(local.invest && local.invest.cats, remote.invest && remote.invest.cats, snap.invest && snap.invest.cats, false, 'investment category');
   const mBudgets = syncMergeMap(local.budgets, remote.budgets, snap.budgets, 'budget');
   const mByValue = syncMergeMap(local.invest && local.invest.byValue, remote.invest && remote.invest.byValue, snap.invest && snap.invest.byValue, 'tracked-by-value flag');
   const mRules = syncMergeRules(local.rules, remote.rules, snap.rules);
   conflicts.push.apply(conflicts, mTxns.conflicts.concat(mCats.conflicts, mAccts.conflicts,
-    mAssets.conflicts, mRecur.conflicts, mTrades.conflicts, mInvCats.conflicts,
+    mAssets.conflicts, mRecur.conflicts, mPots.conflicts, mTrades.conflicts, mInvCats.conflicts,
     mBudgets.conflicts, mByValue.conflicts, mRules.conflicts));
   // The column mapping is one small object: changed on one side wins,
   // changed on both keeps this phone's. Missing on a side means "never
@@ -2497,7 +2510,7 @@ function syncMerge(local, remote, snap){
       updatedAt: new Date().toISOString(), updatedBy: 'phone',
       schema: local.schema || remote.schema || 1,
       txns: mTxns.list, budgets: mBudgets.map, cats: mCats.list, rules: mRules.list,
-      accts: mAccts.list, assets: mAssets.list, recur: mRecur.list,
+      accts: mAccts.list, assets: mAssets.list, recur: mRecur.list, pots: mPots.list,
       invest: {trades: mTrades.list, cats: mInvCats.list, byValue: mByValue.map},
       impmap: impmap
     },
@@ -2527,6 +2540,11 @@ function syncApply(pack){
     save(K.txns, txns); save(K.budgets, budgets); save(K.cats, cats); save(K.rules, rules);
     save(K.accts, accts); save(K.assets, assets); save(K.recur, recur); saveInvest();
     if(pack.impmap) save(K.impmap, pack.impmap);
+    // v71: pots. A file written before v71 has no pots: then this phone's stay.
+    if(Array.isArray(pack.pots)){
+      save('ledger:pots', pack.pots);
+      if(typeof window.syncSetPots === 'function') window.syncSetPots(pack.pots);
+    }
     _updPrevTxns = {}; txns.forEach(n=>{ if(n && n.id) _updPrevTxns[n.id] = syncItemHash(n); });
     _updPrevTrades = {}; (invest.trades || []).forEach(n=>{ if(n && n.id) _updPrevTrades[n.id] = syncItemHash(n); });
   }finally{ syncApplying = false; }
@@ -12227,10 +12245,12 @@ renderSpend = function(){
 // ---- Savings pots ----
 // Something you're saving for: a name, a target, an optional date, and either an
 // account it lives in (its balance is the progress) or an amount you update.
-// Stored in ledger:pots, carried in backups and undo. Not synced with Muse yet.
+// Stored in ledger:pots, carried in backups and undo, and synced with Muse (v71).
 const K_POTS = 'ledger:pots';
 let pots = (()=>{ try{ const v = JSON.parse(localStorage.getItem(K_POTS)); return Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : []; }catch(e){ return []; } })();
 function savePots(){ save(K_POTS, pots); }
+// v71: sync hands pots over here (Muse can add or change them).
+window.syncSetPots = v => { pots = Array.isArray(v) ? v.filter(p=> p && typeof p === 'object' && p.id) : pots; };
 function potHave(p){
   if(p.acct && accts.some(a=>a.id === p.acct)) return Math.max(0, acctBalance(p.acct));
   return Math.max(0, Number(p.saved) || 0);
